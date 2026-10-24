@@ -6,6 +6,11 @@
 >
 > Son güncelleme: **2026-10-24**. En sondaki **"Durum ve değişiklik günlüğü"** bölümü, yapılan ve sırada bekleyen işleri gösterir.
 
+> [!WARNING]
+> **Çalışmaya başlamadan önce iki kural**
+> 1. **Her iş, yol haritasındaki numaralı bir maddeye bağlıdır.** Yol haritası: [`agent-os/product/roadmap.md`](../agent-os/product/roadmap.md). Maddenin numarası işinin **her yerinde** görünür. Örneğin 7. madde için branch `ozellik/m07-...`, spec klasörü `<tarih>-m07-...`, PR başlığı `[M07] ...`. Ayrıntı: [9.6](#96-numaralandırma-her-iş-bir-yol-haritası-maddesine-bağlı).
+> 2. **Dokümanla çalışılır.** Koda başlamadan önce o işin spec dokümanı yazılır. Aldığın kararlar, nedenleri, test sonuçları ve karşılaştığın sorunlar spec klasörüne yazılır. Dokümanı olmayan iş, tezde "yapıldı" sayılmaz.
+
 ### `docs/` klasöründeki dokümanlar
 | Dosya | Ne için | Kim için |
 |---|---|---|
@@ -166,7 +171,9 @@ Bu kuralların çoğunu GitHub zaten **otomatik olarak** uyguluyor; yanlışlık
 | 11 | **Video, log (`.ulg`), veri seti, model ağırlığı repoya konmaz.** 100 MB'tan büyük dosya zaten reddedilir. | Repo şişmesin; GitHub'ın sınırı var. |
 | 12 | **Uçuş/SITL testinde iki repoya aynı isimli `tez-*` tag'i atılır.** (Bkz. [10.4](#104-uçuş-veya-sitl-testi-sürümleri-işaretlemek)) | Autopilot ve Vision ayrı repolar; "bu testte hangi PX4 kodu hangi Pi koduyla çalıştı?" sorusunun cevabı kaybolmasın. |
 | 13 | **Küçük ve sık commit at.** Her çalışan adım ayrı bir commit olur (Claude ile çalışırken bunu Claude kendisi yapar). | Hatalı bir yöne gidersen, en son çalışan duruma kolayca dönebilesin. (Bkz. [5.1](#51-küçük-ve-sık-commit)) |
-| 14 | **Emin olmadığın komutu çalıştırmadan önce sor.** Özellikle `--force`, `--remote`, `reset --hard`. | Bunlar geri alınması zor işler yapar. |
+| 14 | **Her iş numaralı bir yol haritası maddesine bağlıdır; numara branch, spec, commit ve PR adında görünür.** (Bkz. [9.6](#96-numaralandırma-her-iş-bir-yol-haritası-maddesine-bağlı)) | Kimin neyi, hangi madde için yaptığı her yerden takip edilebilsin; tez raporunda iş ↔ sonuç bağlantısı kaybolmasın. |
+| 15 | **Dokümanla çalış:** önce spec, sonra kod; kararlar, nedenleri ve test sonuçları spec klasörüne yazılır. | Dokümanı olmayan iş tezde savunulamaz; arkadaşın işini devraldığında nerede kaldığını görebilsin. |
+| 16 | **Emin olmadığın komutu çalıştırmadan önce sor.** Özellikle `--force`, `--remote`, `reset --hard`. | Bunlar geri alınması zor işler yapar. |
 
 ---
 
@@ -181,8 +188,9 @@ git switch main          # main branch'ine geç
 git pull                 # GitHub'daki en son hali indir
 
 # 1) Kendi branch'ini aç
-git switch -c ozellik/kamera-okuma
-#   branch adı kuralı:  ozellik/...  (yeni şey)   duzeltme/...  (hata düzeltme)   deney/...  (deneme)
+git switch -c ozellik/m09-kamera-okuma
+#   branch adı kuralı:  ozellik/mNN-...  (yeni iş; NN = yol haritası madde numarası)
+#                       duzeltme/mNN-... (hata düzeltme)   deney/mNN-... (deneme)
 
 # 2) Çalış. Ara ara neyi değiştirdiğine bak:
 git status               # hangi dosyalar değişti?
@@ -351,6 +359,30 @@ Bunlar denendi ve çalışıyor:
 `agent-os/product/roadmap.md` (yol haritası) **sadece repo sorumlusu tarafından** güncellenir: bir işin PR'ı birleştikten sonra ilgili madde işaretlenir.
 Claude işi bitirdiğinde roadmap'i kendisi değiştirmez, sadece raporunda "şu madde bitti" diye **önerir**. Böylece aynı dosyayı birkaç kişi aynı anda değiştirip çakışma yaşamaz.
 
+### 9.6 Numaralandırma: her iş bir yol haritası maddesine bağlı
+
+Yol haritasındaki ([`agent-os/product/roadmap.md`](../agent-os/product/roadmap.md)) her maddenin bir numarası var (1, 2, 3 … 27). Bir işe başlarken **önce hangi maddeye ait olduğunu bul.** Bu numara iki haneli yazılır (`m07`) ve işinin her yerinde görünür:
+
+| Nerede | Biçim | Örnek (7. madde: algılama modelinin seçimi) |
+|---|---|---|
+| Branch | `ozellik/mNN-<kısa-ad>` | `ozellik/m07-algilama-modeli` |
+| Spec klasörü | `<tarih>-mNN-<kısa-ad>` | `Vision/agent-os/specs/2026-10-25-m07-algilama-modeli/` |
+| Commit | `<spec-klasörü>: ...` | `2026-10-25-m07-algilama-modeli: Görev grubu 1 — aday modellerin ölçümü` |
+| PR başlığı | `[MNN] <başlık>` | `[M07] Algılama modelinin seçimi` |
+
+- `/agent-os:shape-spec` çalıştırdığında Claude önce "bu iş yol haritasının kaçıncı maddesi?" diye sorar (açıksa kendisi bulur) ve klasör adına numarayı koyar.
+- Yol haritasında olmayan küçük bir iş mi? Repo sorumlusuna sor; onaylanırsa numara `m00` olur.
+- Neden? Tezde "7. maddeyi kim yaptı, hangi PR'da, hangi test sonucuyla?" sorusunun cevabı tek aramayla bulunur.
+
+### 9.7 Dokümanla çalışmak
+
+Bu projede **doküman, işin kendisidir.** Tez sonunda yazılacak rapor bu dokümanlardan derlenecek.
+- **Önce spec, sonra kod:** `/agent-os:shape-spec` → `/agent-os:write-spec` → `/agent-os:create-tasks` → `/agent-os:implement-tasks`.
+- **Kararları yaz:** "Neden bu modeli/yöntemi seçtik?" sorusunun cevabı spec klasöründe olmalı. Seçmediğin seçenekleri ve nedenlerini de yaz.
+- **Sonuçları yaz:** Test ettiğin şeyin sonucunu (sayılar, log adı, `tez-*` tag'i) yaz. "Çalışıyor" yerine "şu testte şu sonucu verdi" yaz.
+- **Sorunları yaz:** Takıldığın yeri ve nasıl çözdüğünü yaz. Bir sonraki kişi aynı yerde zaman kaybetmesin.
+- **Kodla birlikte güncelle:** Kodu değiştirdiysen ilgili dokümanı da aynı PR'da güncelle.
+
 ---
 
 ## 10. Örnek işler
@@ -360,7 +392,7 @@ Claude işi bitirdiğinde roadmap'i kendisi değiştirmez, sadece raporunda "şu
 ```bash
 cd ~/Desktop/Projects/Auto-Follow/Vision
 git switch main && git pull
-git switch -c ozellik/kamera-okuma
+git switch -c ozellik/m09-kamera-okuma      # örnek: yol haritasında ilgili madde 9 ise
 claude
 ```
 Claude içinde sırayla:
@@ -370,7 +402,7 @@ Claude içinde sırayla:
 /agent-os:create-tasks
 /agent-os:implement-tasks
 ```
-Spec `Vision/agent-os/specs/<tarih>-<isim>/` klasörüne, kod `Vision/src/` altına yazılır. Sonra [Bölüm 5](#5-günlük-çalışma-adım-adım)'teki gibi commit → push → PR.
+Spec `Vision/agent-os/specs/<tarih>-m09-<isim>/` klasörüne, kod `Vision/src/` altına yazılır. Sonra [Bölüm 5](#5-günlük-çalışma-adım-adım)'teki gibi commit → push → PR.
 
 > İpucu: Büyük bir işi tek PR'da yapma. Önce sadece spec'i PR olarak açıp arkadaşlarına göstermek iyi bir alışkanlıktır.
 
@@ -449,6 +481,11 @@ PX4 kurulum/derleme sorunları için: `Autopilot/TEZ_README.md` → "Sorun gider
 - [ ] Bu rehberin ekip ile birlikte gözden geçirilmesi
 
 > Yukarıdaki ilk üç madde bitene kadar bu rehberdeki GitHub bağlantıları (`Auto-Follow/Auto-Follow`) ve [3. bölümdeki](#3-kurulum) kurulum adımları çalışmayabilir.
+
+### 2026-10-24: Ürün planı, numaralandırma ve dokümanla çalışma
+- Ürün planı yazıldı (`agent-os/product/`: misyon, 27 maddelik yol haritası, teknoloji yığını).
+- Her iş yol haritasındaki madde numarasıyla anılır: branch `ozellik/mNN-...`, spec klasörü `<tarih>-mNN-...`, PR `[MNN] ...`. Claude spec açarken numarayı sorar. ([9.6](#96-numaralandırma-her-iş-bir-yol-haritası-maddesine-bağlı))
+- "Dokümanla çalış" kuralı eklendi ([9.7](#97-dokümanla-çalışmak)). Rehberin başına uyarı kutusu kondu.
 
 ### 2026-10-24: Küçük ve sık commit kuralı
 - Ekip hatalı ilerlediğinde önceki çalışan duruma dönebilsin diye **her anlamlı adım ayrı bir commit** olur. Altın kurallara 13. madde eklendi; anlatım: [5.1](#51-küçük-ve-sık-commit), geri dönme yolları: [5.2](#52-hatalı-ilerledim-nasıl-geri-dönerim).

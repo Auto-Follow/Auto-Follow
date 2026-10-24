@@ -53,6 +53,11 @@ Komutlar Claude Code'da `/agent-os:` önekiyle görünür: `/agent-os:plan-produ
     - Uygulama: her görev grubu bitince, ilgili kontroller geçtikten sonra commit edilir (`<spec-klasor-adi>: Görev grubu <N> — <ne yapıldı>`). Agent OS kullanılmadan yapılan işlerde de aynı ölçü: her çalışan adım bir commit.
     - Önce branch kontrolü: `main`'deysen commit atma, kullanıcıya branch açmasını söyle. Dosyaları adıyla ekle (`git add -A` / `git add .` kullanma); kullanıcının işe ait olmayan değişikliklerini commit'e katma.
     - Commit atmak serbest; **push, amend, rebase, `reset --hard`, branch silme** kullanıcı istemeden yapılmaz.
+11. **Her iş numaralı bir yol haritası maddesine bağlıdır ve dokümanla yürür:**
+    - Numara `agent-os/product/roadmap.md`'deki madde numarasıdır, iki haneli yazılır: `m07`. Plana uymayan küçük işler kullanıcı onayıyla `m00`.
+    - Branch `ozellik/m07-<ad>` · spec klasörü `<tarih>-m07-<ad>` · commit `<spec-klasor-adi>: ...` · PR başlığı `[M07] <başlık>`.
+    - Kod yazmadan önce spec dokümanı olur (`/agent-os:shape-spec` → `write-spec` → `create-tasks`). Kararlar, gerekçeler, test sonuçları ve karşılaşılan sorunlar o spec klasörüne yazılır; doküman koddan geri kalmaz.
+    - Kullanıcı numarasız veya spec'siz bir işe başlamak isterse önce bunu hatırlat ve hangi maddeye ait olduğunu sor.
 
 ## Henüz kesinleşmemiş konular
 
