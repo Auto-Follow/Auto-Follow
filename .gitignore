@@ -1,0 +1,16 @@
+# Beyaz liste: kok klasorde sadece asagida acikca izin verilenler repoya girer.
+# Autopilot/ ve Vision/ ayri git repolaridir; kisisel notlar, loglar, sanal ortamlar da disarida kalir.
+# Koke yeni bir dosya/klasor eklenecekse buraya "!/<ad>" satiri eklenmelidir.
+/*
+!/.gitignore
+!/README.md
+!/CLAUDE.md
+!/kurulum.sh
+!/kurulum/
+!/agent-os-profilleri/
+!/agent-os/
+!/.claude/
+!/.github/
+
+# Claude Code kisisel ayarlari
+/.claude/settings.local.json

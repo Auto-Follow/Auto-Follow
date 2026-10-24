@@ -1,0 +1,8 @@
+# Projenin temeli: bu yollardaki her degisiklik proje liderinin onayini gerektirir.
+/agent-os/product/      @huseyinuygun43
+/agent-os-profilleri/   @huseyinuygun43
+/kurulum/               @huseyinuygun43
+/kurulum.sh             @huseyinuygun43
+/.github/               @huseyinuygun43
+/.gitignore             @huseyinuygun43
+/CLAUDE.md              @huseyinuygun43

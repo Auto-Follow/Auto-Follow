@@ -1,0 +1,4 @@
+# Auto-Follow alt repolari (Autopilot, Vision) icin profil.
+# auto-follow profilinin her seyini alir; sadece urun (product) dokumanlarinin yerini degistirir:
+# urun plani cati repoda (../agent-os/product/), ortak spec'ler ../agent-os/specs/ altindadir.
+inherits_from: auto-follow
