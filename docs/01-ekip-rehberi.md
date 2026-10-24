@@ -397,14 +397,15 @@ PX4 kurulum/derleme sorunları için: `Autopilot/TEZ_README.md` → "Sorun gider
 ## 14. Durum ve değişiklik günlüğü
 
 ### Sırada bekleyenler
-- [ ] Çatı repo `Auto-Follow/Auto-Follow`'un GitHub'da açılması (diğer repolarla aynı korumalar: PR + 1 onay, temel dosyalarda repo sorumlusu onayı)
-- [ ] Autopilot PR'ı: Agent OS ayarlarının çatıya taşınması, `CLAUDE.md`, kilit listesi değişiklikleri (aşağıda)
-- [ ] Vision PR'ı: Agent OS ayarlarının çatıya taşınması, `CLAUDE.md`, README güncellemesi
+- [x] Çatı repo `Auto-Follow/Auto-Follow` GitHub'da açıldı (2026-10-24). Korumalar diğer repolarla aynı: PR + 1 onay, temel dosyalarda repo sorumlusu onayı.
+- [ ] **Onay bekliyor:** [Autopilot PR #14](https://github.com/Auto-Follow/Autopilot/pull/14): Agent OS ayarlarının çatıya taşınması, `CLAUDE.md`, kilit listesi değişiklikleri (aşağıda)
+- [ ] **Onay bekliyor:** [Vision PR #6](https://github.com/Auto-Follow/Vision/pull/6): aynı uyarlama, `CLAUDE.md`, README güncellemesi
+- [ ] İki PR birleşince **herkes**: çatı repoyu kendi klasörüne bağlar ([3.2](#32-autopilot-ve-vision-klasörlerin-zaten-varsa)) ve Autopilot/Vision'da `git switch main && git pull` yapar
 - [ ] Ürün planının yazılması (`/agent-os:plan-product`, çatıda, repo sorumlusu). **Bu yapılmadan spec komutları çalışmaz** (bilerek böyle).
 - [ ] Pixhawk 6C'de yer açmak (kullanılmayan PX4 modüllerini kapatan özel kart ayarı); ilk PX4 modülünden önce
 - [ ] Bu rehberin ekip ile birlikte gözden geçirilmesi
 
-> Yukarıdaki ilk üç madde bitene kadar bu rehberdeki GitHub bağlantıları (`Auto-Follow/Auto-Follow`) ve [3. bölümdeki](#3-kurulum) kurulum adımları çalışmayabilir.
+> Autopilot ve Vision PR'ları birleşene kadar, o repolardaki Claude/Agent OS ayarları eski düzende kalır.
 
 ### 2026-10-24: Dokümanlar `docs/` altında toplandı
 - Dokümanlar numaralandırıldı: `01-ekip-rehberi.md` (bu rehber), `02-ortak-yazilim-surumleri.md` (eski adı `ORTAK-SURUMLER.md`), `05-ekip-rehberi-ilk-taslak.md` (eski taslak, arşiv).
