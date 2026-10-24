@@ -42,7 +42,7 @@ Komutlar Claude Code'da `/agent-os:` önekiyle görünür: `/agent-os:plan-produ
 1. **PX4 v1.17.0'da kalıcı kilitli.** Güncelleme, yükseltme, upstream `pull` yok. İzin verilen PX4 yolları: `Autopilot/tez/pin/allowed-paths.txt`. Kontrol: `Autopilot/tez/pin/verify_pin.sh --worktree`.
 2. **Yasak komutlar:** `git submodule update --remote` (doğrusu `git submodule update --init --recursive`), `main`'e doğrudan push, force-push, `v*` tag açmak (PX4 firmware sürümünü bu tag'lerden okur).
 3. **Her değişiklik:** branch → PR → CI yeşil → en az 1 onay → squash merge. Claude'un yaptığı değişiklikler de bu yoldan geçer.
-4. **Sürüm sabitliği:** hiçbir araç/paket "en son sürüm"e kaymaz. Sabit sürümler: `Autopilot/tez/env/VERSIONS.md` (Vision Python paketleri: `Vision/requirements/`). Yeni araç sabit sürümüyle oraya yazılmadan kullanılmaz.
+4. **Sürüm sabitliği:** hiçbir araç/paket "en son sürüm"e kaymaz. Sabit sürümler: `Autopilot/tez/env/VERSIONS.md` (Vision Python paketleri: `Vision/requirements/`). Yeni araç sabit sürümüyle oraya yazılmadan kullanılmaz. Ekip özeti `docs/02-ortak-yazilim-surumleri.md`; bir sürüm değişirse `VERSIONS.md`, `Vision/requirements/`, `docs/02-...` ve `agent-os/product/tech-stack.md` aynı PR'da güncellenir.
 5. **Simülatör Gazebo Harmonic** (`gz_*` hedefleri). Gazebo Classic (`gazebo-classic_*`, `.world`) kullanılmaz.
 6. **Uyumlu sürümler:** bir SITL testi veya uçuş için kullanılan Autopilot ve Vision commit'leri, **iki repoda aynı isimli** `tez-*` tag'iyle işaretlenir (ör. `tez-ucus-1`).
 7. **Alt repolar çatıya çalışma zamanında bağımlı olamaz:** `Vision/src/` ve PX4 kodu `../` yoluyla çatıdaki veya diğer repodaki dosyalara başvurmaz (Raspberry Pi'ye sadece `Vision` klonlanır; CI sadece tek repoyu görür).

@@ -6,6 +6,8 @@ Son güncelleme: 2026-10-24
 - **Kesin:** Karar verilmiş; sabit sürümü varsa yazılmıştır.
 - **Karar bekliyor:** Henüz seçilmemiş veya doğrulanmamış. Kesinleşmiş gibi kullanılmaz; ilgili yol haritası maddesinde araştırılıp gerekçesiyle karara bağlanır.
 
+**Ekip için sade özet:** [`docs/02-ortak-yazilim-surumleri.md`](../../docs/02-ortak-yazilim-surumleri.md): herkesin laptopunda ve Raspberry Pi'de **aynı olması gereken** sürümler, kurulum sonrası kontrol komutları ve "yapma" listesi. Bu dosya ile o doküman birbiriyle **tutarlı tutulur**: bir sürüm/araç değişince `VERSIONS.md`, `Vision/requirements/`, `02-ortak-yazilim-surumleri.md` ve bu dosya **aynı PR'da** güncellenir. Spec yazan veya kod geliştiren herkes (Claude ajanları dahil) yeni bir araç/paket önermeden önce o dokümana bakar.
+
 **Sürümlerin tek doğru kaynağı:** `Autopilot/tez/env/VERSIONS.md` (araçlar) ve `Vision/requirements/*.txt` (Vision Python paketleri). Bu dosya ile onlar çelişirse onlar geçerlidir. Hiçbir araç veya paket "en son sürüm"e kaymaz; yeni bir araç, sabit sürümü oraya yazılmadan kullanılmaz.
 
 ## 1. Donanım
