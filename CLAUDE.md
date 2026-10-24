@@ -61,6 +61,8 @@ Komutlar Claude Code'da `/agent-os:` önekiyle görünür: `/agent-os:plan-produ
 
 ## Henüz kesinleşmemiş konular
 
+**İsimlendirme:** PX4 parametre, modül, airframe, Gazebo modeli ve dosya adlarını **işi yapan kişi kendi spec'inde belirler**. Önceden belirlenmiş bir ad veya ön ek yoktur; Claude bir ön ek dayatmaz. Sadece PX4 kurallarına uyulur (parametre: büyük harf, ≤16 karakter, çakışma yok).
+
 Ürün planı: `agent-os/product/` (misyon, 27 maddelik yol haritası, teknoloji yığını). **Kesin olan ve olmayan her şeyin listesi `agent-os/product/tech-stack.md`'dedir** ("Kesin" / "Karar bekliyor").
 
 Kesin donanım: Raspberry Pi 5 + **Hailo AI Kit** + **Raspberry Pi Camera Module 3**; hazır (önceden eğitilmiş) insan algılama modeli kullanılır, model eğitimi kapsam dışı.

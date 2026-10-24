@@ -422,6 +422,7 @@ Spec `Vision/agent-os/specs/<tarih>-m09-<isim>/` klasörüne, kod `Vision/src/` 
 Aynısı, `Autopilot/` klasöründe. Ek dikkat:
 - PX4'ün kendi dosyalarına dokunmak **kilit listesiyle** sınırlıdır (`Autopilot/tez/pin/allowed-paths.txt`). Listede olmayan bir dosyayı değiştirmen gerekiyorsa **önce repo sorumlusuna sor.**
 - Pixhawk 6C'nin hafızası **neredeyse dolu (~%98)**. Yeni PX4 modülü eklemeden önce yer açılması planlanıyor.
+- **İsimleri sen belirlersin:** Yeni parametre, modül veya dosya adlarını kendi spec'inde sen seçersin; önceden belirlenmiş bir ad veya ön ek yok. Sadece PX4'ün kurallarına uy: parametre adı büyük harf, en fazla 16 karakter ve mevcut PX4 parametreleriyle çakışmamalı. Seçtiğin adları ve nedenini spec'e yaz.
 
 ### 10.3 İki tarafı birden ilgilendiren iş
 Örnek: "Pi, takip edilen hedefin bilgisini Pixhawk'a hangi mesajla göndersin?"
@@ -519,13 +520,13 @@ PX4 kurulum/derleme sorunları için: `Autopilot/TEZ_README.md` → "Sorun gider
 - Alt repolarda ürün planı yoksa spec yazılmasını durduran ve `plan-product`'ı çatıya yönlendiren **güvenlik önlemleri** eklendi ve Claude ile denendi.
 - Kurulum tek komuta indirildi: `./kurulum.sh`.
 
-**Düzeltilen bir hata: `_tez` isimleri**
-- Daha önce Claude'un kurallarına, **karar verilmeden** bazı örnek isimler yazılmıştı: PX4 parametreleri `TEZ_...`, modüller `tez_...`, simülasyon dosyası `..._gz_x500_tez`. Bu isimlerde **gerçek bir dosya hiç oluşturulmadı**; sadece kurallarda geçiyorlardı.
-- Ayrıca sürüm kilidi listesine, henüz var olmayan bu simülasyon dosyaları için 4 PX4 dosyasında değişiklik izni eklenmişti.
-- İkisi de kaldırıldı. Bu konularda karar verilene kadar Claude artık isim önermez, sorar. Karar verilince ilgili izin ayrı ve açık bir PR ile eklenecek.
+**Düzeltilen bir hata: önceden belirlenmiş isimler**
+- Daha önce Claude'un kurallarına, **karar verilmeden** PX4 parametreleri, modüller ve simülasyon dosyaları için hazır isimler yazılmıştı. Bu isimlerle **gerçek bir dosya hiç oluşturulmadı**; sadece kurallarda geçiyorlardı.
+- Ayrıca sürüm kilidi listesine, henüz var olmayan simülasyon dosyaları için 4 PX4 dosyasında değişiklik izni eklenmişti.
+- İkisi de kaldırıldı. **Parametre, modül ve dosya adlarını işi yapan kişi kendi spec'inde belirler**; önceden belirlenmiş bir ad veya ön ek yok (bkz. [10.2](#102-sadece-px4-tarafında-bir-özellik)).
 
 **Sürüm kilidi listesindeki değişiklikler** (`Autopilot/tez/pin/allowed-paths.txt`):
 - Eklendi: `CLAUDE.md` (Claude kuralları; PX4'ün kendi dosyası değil)
-- Çıkarıldı: `ROMFS/.../airframes/*_gz_x500_tez*`, `ROMFS/.../airframes/CMakeLists.txt`, `ROMFS/.../px4-rc.gzsim`, `src/modules/simulation/gz_bridge/gz_env.sh.in`
+- Çıkarıldı: henüz var olmayan bir simülasyon modeli için önceden verilmiş 4 PX4 yolu (SITL airframe dosyaları, `airframes/CMakeLists.txt`, `px4-rc.gzsim`, `gz_env.sh.in`)
 
 **Değişmeyenler:** PX4 sürümü, otomatik kontroller, PR/onay kuralları, Pixhawk'a ve Pi'ye yükleme.
