@@ -61,4 +61,8 @@ Komutlar Claude Code'da `/agent-os:` önekiyle görünür: `/agent-os:plan-produ
 
 ## Henüz kesinleşmemiş konular
 
-Pi ↔ Pixhawk mesaj seti (ICD), hedef tespit yöntemi (klasik OpenCV / derin öğrenme), Pi kamerası ve ROS 2 kullanımı **henüz karar verilmedi**. Bunları kesinleşmiş gibi uygulama; önce repo sorumlusuna sor.
+Ürün planı: `agent-os/product/` (misyon, 27 maddelik yol haritası, teknoloji yığını). **Kesin olan ve olmayan her şeyin listesi `agent-os/product/tech-stack.md`'dedir** ("Kesin" / "Karar bekliyor").
+
+Kesin donanım: Raspberry Pi 5 + **Hailo AI Kit** + **Raspberry Pi Camera Module 3**; hazır (önceden eğitilmiş) insan algılama modeli kullanılır, model eğitimi kapsam dışı.
+
+**Karar bekliyor** (kesinleşmiş gibi uygulama; ilgili yol haritası maddesinde araştırılıp gerekçesiyle karara bağlanır, emin değilsen repo sorumlusuna sor): hangi algılama modeli, Hailo yazılım yığını ve sürümleri (Pi OS Trixie uyumu doğrulanmadı), Pi ↔ Pixhawk haberleşme yöntemi ve ICD, kontrol algoritması, takip modunun PX4'e entegrasyon yaklaşımı, simülasyon kamerası ve hareketli insan hedefi, laptop'ta Hailo'suz algılama, RC, batarya, görüntü aktarımı, ROS 2 (taslak: kullanılmıyor), başarı kriterlerinin sayısal değerleri.

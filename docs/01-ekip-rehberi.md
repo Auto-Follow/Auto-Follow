@@ -477,7 +477,8 @@ PX4 kurulum/derleme sorunları için: `Autopilot/TEZ_README.md` → "Sorun gider
 - [ ] **Onay bekliyor:** [Autopilot PR #14](https://github.com/Auto-Follow/Autopilot/pull/14): Agent OS ayarlarının çatıya taşınması, `CLAUDE.md`, kilit listesi değişiklikleri (aşağıda)
 - [ ] **Onay bekliyor:** [Vision PR #6](https://github.com/Auto-Follow/Vision/pull/6): aynı uyarlama, `CLAUDE.md`, README güncellemesi
 - [ ] İki PR birleşince **herkes**: çatı repoyu kendi klasörüne bağlar ([3.2](#32-autopilot-ve-vision-klasörlerin-zaten-varsa)) ve Autopilot/Vision'da `git switch main && git pull` yapar
-- [ ] Ürün planının yazılması (`/agent-os:plan-product`, çatıda, repo sorumlusu). **Bu yapılmadan spec komutları çalışmaz** (bilerek böyle).
+- [x] Ürün planı yazıldı: [`agent-os/product/`](../agent-os/product/) (misyon, 27 maddelik yol haritası, teknoloji yığını). Bu PR birleşince spec komutları çalışmaya başlar.
+- [ ] **Ekip:** yol haritasının ilk maddelerinden iş seçip `/agent-os:shape-spec` ile başlamak (bkz. [9.6](#96-numaralandırma-her-iş-bir-yol-haritası-maddesine-bağlı), [10](#10-örnek-işler))
 - [ ] Pixhawk 6C'de yer açmak (kullanılmayan PX4 modüllerini kapatan özel kart ayarı); ilk PX4 modülünden önce
 - [ ] Bu rehberin ekip ile birlikte gözden geçirilmesi
 

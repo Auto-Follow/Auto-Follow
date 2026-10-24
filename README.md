@@ -13,6 +13,8 @@ Bu repo projenin **çatısıdır**: ürün planı, iki tarafı ilgilendiren orta
 > **Nasıl çalıştığımızın anlatımı (önce bunu okuyun):** [`docs/01-ekip-rehberi.md`](docs/01-ekip-rehberi.md)
 >
 > Sabit yazılım sürümleri: [`docs/02-ortak-yazilim-surumleri.md`](docs/02-ortak-yazilim-surumleri.md)
+>
+> Ürün planı ve **yol haritası (işler buradan seçilir)**: [`agent-os/product/`](agent-os/product/) · [`roadmap.md`](agent-os/product/roadmap.md)
 
 ## Klasör yapısı (herkeste aynı)
 
