@@ -10,6 +10,8 @@ Bu repo projenin **çatısıdır**: ürün planı, iki tarafı ilgilendiren orta
 | [`Auto-Follow/Autopilot`](https://github.com/Auto-Follow/Autopilot) | PX4 v1.17.0 (kilitli) + tez PX4 kodu |
 | [`Auto-Follow/Vision`](https://github.com/Auto-Follow/Vision) | Raspberry Pi 5 Python kodu (görüntü işleme, Pixhawk iletişimi) |
 
+> **Nasıl çalıştığımızın anlatımı (önce bunu okuyun):** [`docs/cati-repo-kullanim.md`](docs/cati-repo-kullanim.md)
+
 ## Klasör yapısı (herkeste aynı)
 
 ```
