@@ -6,6 +6,15 @@
 >
 > Son güncelleme: **2026-10-24**. En sondaki **"Durum ve değişiklik günlüğü"** bölümü, yapılan ve sırada bekleyen işleri gösterir.
 
+### `docs/` klasöründeki dokümanlar
+| Dosya | Ne için | Kim için |
+|---|---|---|
+| [`01-ekip-rehberi.md`](01-ekip-rehberi.md) | Bu rehber: kurallar, çalışma düzeni, Claude/Agent OS | Herkes (**önce bunu oku**) |
+| [`02-ortak-yazilim-surumleri.md`](02-ortak-yazilim-surumleri.md) | Laptop ve Raspberry Pi'de kurulu olması gereken sabit sürümler | Herkes (kurulumda) |
+| [`05-ekip-rehberi-ilk-taslak.md`](05-ekip-rehberi-ilk-taslak.md) | Bu rehberin eski taslağı (arşiv; bilgileri eski) | Sadece geçmiş için |
+
+> `03` ve `04` numaralı dosyalar repo sorumlusunun kişisel notlarıdır; GitHub'a gönderilmez, bu yüzden repoda görmezsin.
+
 ---
 
 ## İçindekiler
@@ -64,7 +73,7 @@ Bilgisayarında **herkeste aynı** şekilde durur:
 ~/Desktop/Projects/Auto-Follow/      ← ÇATI REPO
 ├── README.md
 ├── CLAUDE.md                        ← Claude'un her açılışta okuduğu kurallar
-├── docs/                            ← bu rehber
+├── docs/                            ← dokümanlar (numaralı: 01-ekip-rehberi.md, 02-...)
 ├── kurulum.sh                       ← kurulum scripti
 ├── kurulum/                         ← Claude/Agent OS kurulum scriptleri
 ├── agent-os-profilleri/             ← Claude'un uyduğu kuralların kaynağı (repo sorumlusu düzenler)
@@ -396,6 +405,10 @@ PX4 kurulum/derleme sorunları için: `Autopilot/TEZ_README.md` → "Sorun gider
 - [ ] Bu rehberin ekip ile birlikte gözden geçirilmesi
 
 > Yukarıdaki ilk üç madde bitene kadar bu rehberdeki GitHub bağlantıları (`Auto-Follow/Auto-Follow`) ve [3. bölümdeki](#3-kurulum) kurulum adımları çalışmayabilir.
+
+### 2026-10-24: Dokümanlar `docs/` altında toplandı
+- Dokümanlar numaralandırıldı: `01-ekip-rehberi.md` (bu rehber), `02-ortak-yazilim-surumleri.md` (eski adı `ORTAK-SURUMLER.md`), `05-ekip-rehberi-ilk-taslak.md` (eski taslak, arşiv).
+- `03` ve `04` repo sorumlusunun kişisel notlarıdır ve repoya girmez.
 
 ### 2026-10-24: Çatı repo ve Agent OS düzeni
 **Ne yapıldı (sade anlatım):**

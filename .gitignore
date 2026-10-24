@@ -15,3 +15,7 @@
 
 # Claude Code kisisel ayarlari
 /.claude/settings.local.json
+
+# Kisisel notlar (docs/ icinde durur ama repoya girmez)
+/docs/03-acik-kararlar-ve-yapilacaklar.md
+/docs/04-claude-oturum-devam-notu.md
