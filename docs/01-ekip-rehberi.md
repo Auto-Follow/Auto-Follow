@@ -23,6 +23,8 @@
 3. [Kurulum](#3-kurulum)
 4. [Altın kurallar](#4-altın-kurallar)
 5. [Günlük çalışma: adım adım](#5-günlük-çalışma-adım-adım)
+   - [5.1 Küçük ve sık commit](#51-küçük-ve-sık-commit)
+   - [5.2 Hatalı ilerledim: nasıl geri dönerim?](#52-hatalı-ilerledim-nasıl-geri-dönerim)
 6. [Otomatik kontroller (CI)](#6-otomatik-kontroller-ci)
 7. [GitHub'ın seni durduracağı durumlar](#7-githubın-seni-durduracağı-durumlar)
 8. ["PR'ım neden birleşmiyor?"](#8-prım-neden-birleşmiyor)
@@ -163,7 +165,8 @@ Bu kuralların çoğunu GitHub zaten **otomatik olarak** uyguluyor; yanlışlık
 | 10 | **Simülatör Gazebo Harmonic'tir.** İnternetteki "Gazebo Classic" rehberleri (`gazebo-classic_...`, `.world`) bizde çalışmaz. | Ubuntu 24.04'te Gazebo Classic desteklenmiyor. |
 | 11 | **Video, log (`.ulg`), veri seti, model ağırlığı repoya konmaz.** 100 MB'tan büyük dosya zaten reddedilir. | Repo şişmesin; GitHub'ın sınırı var. |
 | 12 | **Uçuş/SITL testinde iki repoya aynı isimli `tez-*` tag'i atılır.** (Bkz. [10.4](#104-uçuş-veya-sitl-testi-sürümleri-işaretlemek)) | Autopilot ve Vision ayrı repolar; "bu testte hangi PX4 kodu hangi Pi koduyla çalıştı?" sorusunun cevabı kaybolmasın. |
-| 13 | **Emin olmadığın komutu çalıştırmadan önce sor.** Özellikle `--force`, `--remote`, `reset --hard`. | Bunlar geri alınması zor işler yapar. |
+| 13 | **Küçük ve sık commit at.** Her çalışan adım ayrı bir commit olur (Claude ile çalışırken bunu Claude kendisi yapar). | Hatalı bir yöne gidersen, en son çalışan duruma kolayca dönebilesin. (Bkz. [5.1](#51-küçük-ve-sık-commit)) |
+| 14 | **Emin olmadığın komutu çalıştırmadan önce sor.** Özellikle `--force`, `--remote`, `reset --hard`. | Bunlar geri alınması zor işler yapar. |
 
 ---
 
@@ -206,6 +209,46 @@ git push -u origin ozellik/kamera-okuma             # ilk seferde böyle; sonrak
 
 > **Commit'ten önce (Vision):** `.venv/bin/ruff format . && .venv/bin/ruff check . && .venv/bin/pytest -q`
 > **Commit'ten önce (Autopilot):** `tez/pin/verify_pin.sh --worktree` ve değiştirdiğin şeye göre `make px4_sitl`
+
+### 5.1 Küçük ve sık commit
+
+Commit'i bir **kayıt noktası** gibi düşün. Ne kadar sık kayıt alırsan, bir şey bozulduğunda o kadar az iş kaybedersin.
+
+- **Ne zaman commit?** Her küçük ama **çalışan** adımda: bir fonksiyon yazıldı ve testi geçti → commit. Bir hata düzeltildi → commit. Akşam bıraktın → o ana kadar çalışanı commit'le.
+- **Ne kadar büyük?** Bir commit tek bir şeyi anlatsın. "Kamera okuma + hedef seçimi + README" yerine üç ayrı commit.
+- **Mesaj:** Neyi yaptığını kısaca yaz: `kamera: Gazebo görüntüsünü okuyan fonksiyon ekle`. "düzeltme", "deneme2" gibi mesajlar sonra işe yaramaz.
+- **Push:** Commit'ler önce sadece senin bilgisayarında durur. Günün sonunda (veya önemli bir adımdan sonra) `git push` ile kendi branch'ini GitHub'a gönder. Böylece bilgisayarına bir şey olsa da işin kaybolmaz. Kendi branch'ine push etmek `main`'i etkilemez.
+
+**Claude ile çalışırken:** Claude (Agent OS komutlarıyla veya komutsuz) bunu **kendisi yapar**:
+- Spec aşamalarında: `/agent-os:shape-spec`, `/agent-os:write-spec`, `/agent-os:create-tasks` bittikçe spec klasörünü commit'ler.
+- Uygulamada: `/agent-os:implement-tasks` her **görev grubunu** bitirince önce kontrolleri (testler, `verify_pin`, derleme) çalıştırır, geçerse o grubu **tek bir commit** olarak kaydeder. Mesaj şöyle olur: `<spec-adı>: Görev grubu 2 — hedef vektörü hesaplama`.
+- Kontroller geçmezse commit atmaz, sana hatayı söyler.
+- `main`'deysen hiç başlamaz, önce branch açmanı ister.
+- **Push yapmaz.** Push'u sen yaparsın.
+
+### 5.2 Hatalı ilerledim: nasıl geri dönerim?
+
+Önce **geçmişe bak**. Her satır bir commit (kayıt noktası), en üstteki en yenisi:
+```bash
+git log --oneline
+#   a1b2c3d kamera-okuma: Görev grubu 3 — hedef seçimi        ← bozuk çıktı
+#   9f8e7d6 kamera-okuma: Görev grubu 2 — piksel → body frame  ← burası çalışıyordu
+#   5c4b3a2 kamera-okuma: Görev grubu 1 — kamera okuma
+```
+
+Sonra durumuna uyan satırı seç (en güvenliden en tehlikeliye):
+
+| Durum | Komut | Ne olur |
+|---|---|---|
+| Henüz commit etmediğim değişiklikleri çöpe atmak istiyorum (tek dosya) | `git restore <dosya>` | O dosya son commit'teki hâline döner. **Kaydedilmemiş değişiklik kaybolur.** |
+| Eski bir hâle sadece **bakmak** istiyorum | `git switch --detach 9f8e7d6` → bak/dene → geri dön: `git switch -` | Hiçbir şey silinmez. |
+| Bir commit'in yaptığını **geri almak** istiyorum (push ettiysem de güvenli) | `git revert a1b2c3d` | O commit'i tersine çeviren **yeni bir commit** oluşur. Geçmiş silinmez. **İlk tercihin bu olsun.** |
+| Son commit'i geri almak istiyorum ama değişiklikler dursun (**push etmediysem**) | `git reset --soft HEAD~1` | Commit kalkar, dosyalardaki değişikliklerin yerinde kalır. |
+| Branch'imi tamamen eski bir noktaya döndürmek istiyorum (**push etmediysem**) | Önce yedek: `git branch yedek/kamera-okuma`  sonra: `git reset --hard 9f8e7d6` | O noktadan sonraki **her şey silinir** (yedek branch'te durur). Emin değilsen sor. |
+
+> **Kurallar:** Bu komutları sadece **kendi branch'inde** kullan, `main`'de asla. Push ettiğin bir commit'i geri almak için **sadece `git revert`** kullan. `reset --hard` ve `push -f` kullanmadan önce mutlaka sor.
+>
+> Claude'a da söyleyebilirsin: *"Görev grubu 3'ten önceki hâle dönmek istiyorum, nasıl yaparız?"* Claude seçenekleri anlatır ama `reset --hard` gibi geri alınamayan işleri **sen onaylamadan yapmaz**.
 
 ---
 
@@ -302,6 +345,7 @@ Bunlar denendi ve çalışıyor:
 - Claude bir bileşen spec'i yazarken çatıdaki ortak spec'lere (ör. Pi ↔ Pixhawk arayüzü) bakar. Aynı arayüzü yeniden tanımlamaz, onlara referans verir.
 - Henüz karar verilmemiş konularda (mesaj seti, görüntü işleme yöntemi, PX4'e eklenecek dosyaların adları ve yerleri…) Claude **tahmin etmez, sorar.**
 - Claude'un yaptığı değişiklikler de **aynı kurallara** tabidir: branch → PR → kontroller → onay.
+- Claude çalışırken **küçük ve sık commit** atar (her spec aşaması, her görev grubu), `main`'de çalışmaz ve push yapmaz. Ayrıntı: [5.1](#51-küçük-ve-sık-commit).
 
 ### 9.5 Ürün planı ve yol haritası
 `agent-os/product/roadmap.md` (yol haritası) **sadece repo sorumlusu tarafından** güncellenir: bir işin PR'ı birleştikten sonra ilgili madde işaretlenir.
@@ -405,6 +449,10 @@ PX4 kurulum/derleme sorunları için: `Autopilot/TEZ_README.md` → "Sorun gider
 - [ ] Bu rehberin ekip ile birlikte gözden geçirilmesi
 
 > Yukarıdaki ilk üç madde bitene kadar bu rehberdeki GitHub bağlantıları (`Auto-Follow/Auto-Follow`) ve [3. bölümdeki](#3-kurulum) kurulum adımları çalışmayabilir.
+
+### 2026-10-24: Küçük ve sık commit kuralı
+- Ekip hatalı ilerlediğinde önceki çalışan duruma dönebilsin diye **her anlamlı adım ayrı bir commit** olur. Altın kurallara 13. madde eklendi; anlatım: [5.1](#51-küçük-ve-sık-commit), geri dönme yolları: [5.2](#52-hatalı-ilerledim-nasıl-geri-dönerim).
+- Claude bunu otomatik yapar: spec aşamaları ve her görev grubu bittikçe (kontroller geçerse) commit atar; `main`'de çalışmaz; push yapmaz.
 
 ### 2026-10-24: Dokümanlar `docs/` altında toplandı
 - Dokümanlar numaralandırıldı: `01-ekip-rehberi.md` (bu rehber), `02-ortak-yazilim-surumleri.md` (eski adı `ORTAK-SURUMLER.md`), `05-ekip-rehberi-ilk-taslak.md` (eski taslak, arşiv).

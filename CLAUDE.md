@@ -48,6 +48,11 @@ Komutlar Claude Code'da `/agent-os:` önekiyle görünür: `/agent-os:plan-produ
 7. **Alt repolar çatıya çalışma zamanında bağımlı olamaz:** `Vision/src/` ve PX4 kodu `../` yoluyla çatıdaki veya diğer repodaki dosyalara başvurmaz (Raspberry Pi'ye sadece `Vision` klonlanır; CI sadece tek repoyu görür).
 8. **Çatının köküne araç ayar dosyası konmaz** (`pyproject.toml`, `setup.cfg`, `pytest.ini`, `ruff.toml`, `conftest.py`, `.clang-format`, `.editorconfig`): bu araçlar ayar dosyasını üst klasörlerde de arar.
 9. Video, log (`.ulg`), veri seti, model ağırlığı ve 100 MB'tan büyük dosya hiçbir repoya girmez.
+10. **Küçük ve sık commit:** Ekip hatalı ilerlediğinde önceki çalışan duruma dönebilmelidir. Bir branch'te çalışırken her anlamlı adım ayrı commit olur. Bunu kullanıcı ayrıca istemese de yap:
+    - Spec aşamaları: `shape-spec`, `write-spec`, `create-tasks` her biri bitince spec klasörü commit edilir (`<spec-klasor-adi>: requirements` / `: spec` / `: tasks`).
+    - Uygulama: her görev grubu bitince, ilgili kontroller geçtikten sonra commit edilir (`<spec-klasor-adi>: Görev grubu <N> — <ne yapıldı>`). Agent OS kullanılmadan yapılan işlerde de aynı ölçü: her çalışan adım bir commit.
+    - Önce branch kontrolü: `main`'deysen commit atma, kullanıcıya branch açmasını söyle. Dosyaları adıyla ekle (`git add -A` / `git add .` kullanma); kullanıcının işe ait olmayan değişikliklerini commit'e katma.
+    - Commit atmak serbest; **push, amend, rebase, `reset --hard`, branch silme** kullanıcı istemeden yapılmaz.
 
 ## Henüz kesinleşmemiş konular
 
