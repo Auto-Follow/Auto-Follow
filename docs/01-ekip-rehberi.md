@@ -354,6 +354,26 @@ cd ~/Desktop/Projects/Auto-Follow/Vision
 claude
 ```
 
+#### VS Code ile çalışmak
+
+**Kısa kural: VS Code'da hangi klasörü açarsan Claude o repoda çalışır.** Spec'in nereye yazılacağını bu belirler.
+
+| Ne yapacaksın | VS Code'da açacağın klasör |
+|---|---|
+| Pi tarafı | `code ~/Desktop/Projects/Auto-Follow/Vision` |
+| PX4 tarafı | `code ~/Desktop/Projects/Auto-Follow/Autopilot` |
+| İki tarafı birden ilgilendiren iş, ürün planını okumak | `code ~/Desktop/Projects/Auto-Follow` |
+
+(`code` komutu çalışmazsa VS Code'da **File → Open Folder** ile aynı klasörü seç.)
+
+- **Ürün planı nerede?** Her zaman çatıda: `~/Desktop/Projects/Auto-Follow/agent-os/product/`. VS Code'da `Vision/` ya da `Autopilot/` açıkken bu klasör gezginde görünmez, ama Claude onu yine okur ([9.3](#93-claude-neyi-otomatik-biliyor)). Okumak istersen GitHub'dan ya da çatıyı açtığın ikinci bir VS Code penceresinden bak.
+- **Spec nereye yazılır?** Açtığın klasörün `agent-os/specs/` klasörüne. Örneğin `Vision/` açıkken `/agent-os:shape-spec` çalıştırırsan spec `Vision/agent-os/specs/` altına yazılır.
+- **Dikkat:** Sadece Pi işi yapacakken VS Code'da çatıyı (`Auto-Follow/`) açıp Claude'u orada başlatırsan spec yanlışlıkla çatıya yazılır. Tek tarafı ilgilendiren işte o tarafın klasörünü aç.
+- **İki tarafta birden mi çalışıyorsun?** İki ayrı VS Code penceresi aç: biri `Vision/`, biri `Autopilot/`.
+- **Claude'u başlatmak:** VS Code'un terminalini aç (**Terminal → New Terminal**). Terminal açtığın klasörde başlar, orada `claude` yaz. Claude Code eklentisi kuruluysa o da açtığın klasörde çalışır.
+- **Branch'i kontrol et:** Sol alttaki durum çubuğunda branch adı yazar. `main` görüyorsan önce kendi branch'ini aç ([5](#5-günlük-çalışma-adım-adım)).
+- **Çatıyı açtığında Source Control paneli üç repoyu ayrı ayrı gösterebilir.** Commit atmadan önce doğru reponun altındaki **Commit** düğmesine bastığından emin ol.
+
 ### 9.3 Claude neyi otomatik biliyor?
 - Nerede açarsan aç, Claude **çatıdaki `CLAUDE.md`'yi okur**. Yani kuralları (sürüm kilidi, yasak komutlar, Gazebo Harmonic, sürüm sabitliği…) her seferinde bilir.
 - `Autopilot/` veya `Vision/` içinde spec yazarken ürün planını **bir üst klasörden** (`../agent-os/product/`) kendisi okur. Senin bir şey yapmana gerek yok.
@@ -487,15 +507,15 @@ PX4 kurulum/derleme sorunları için: `Autopilot/TEZ_README.md` → "Sorun gider
 
 ### Sırada bekleyenler
 - [x] Çatı repo `Auto-Follow/Auto-Follow` GitHub'da açıldı (2026-10-24). Korumalar diğer repolarla aynı: PR + 1 onay, temel dosyalarda repo sorumlusu onayı.
-- [ ] **Onay bekliyor:** [Autopilot PR #14](https://github.com/Auto-Follow/Autopilot/pull/14): Agent OS ayarlarının çatıya taşınması, `CLAUDE.md`, kilit listesi değişiklikleri (aşağıda)
-- [ ] **Onay bekliyor:** [Vision PR #6](https://github.com/Auto-Follow/Vision/pull/6): aynı uyarlama, `CLAUDE.md`, README güncellemesi
-- [ ] İki PR birleşince **herkes**: çatı repoyu kendi klasörüne bağlar ([3.2](#32-autopilot-ve-vision-klasörlerin-zaten-varsa)) ve Autopilot/Vision'da `git switch main && git pull` yapar
-- [x] Ürün planı yazıldı: [`agent-os/product/`](../agent-os/product/) (misyon, 27 maddelik yol haritası, teknoloji yığını). Bu PR birleşince spec komutları çalışmaya başlar.
-- [ ] **Ekip:** yol haritasının ilk maddelerinden iş seçip `/agent-os:shape-spec` ile başlamak (bkz. [9.6](#96-numaralandırma-her-iş-bir-yol-haritası-maddesine-bağlı), [10](#10-örnek-işler))
+- [x] Autopilot ve Vision'daki Agent OS uyarlaması, `CLAUDE.md` dosyaları ve isimlendirme düzeltmesi `main`'e birleşti (2026-10-24).
+- [x] Ürün planı yazıldı ve `main`'de: [`agent-os/product/`](../agent-os/product/) (misyon, 27 maddelik yol haritası, teknoloji yığını).
+- [ ] **Herkes:** kurulumu yapar ([3](#3-kurulum)). Autopilot ve Vision klasörün zaten varsa [3.2](#32-autopilot-ve-vision-klasörlerin-zaten-varsa)'yi uygular, sonra her repoda `git switch main && git pull` yapar.
+- [ ] **Ekip:** yol haritasından kendisine verilen maddeyi `/agent-os:shape-spec` ile başlatır (bkz. [9.6](#96-numaralandırma-her-iş-bir-yol-haritası-maddesine-bağlı), [10](#10-örnek-işler)).
 - [ ] Pixhawk 6C'de yer açmak (kullanılmayan PX4 modüllerini kapatan özel kart ayarı); ilk PX4 modülünden önce
 - [ ] Bu rehberin ekip ile birlikte gözden geçirilmesi
 
-> Autopilot ve Vision PR'ları birleşene kadar, o repolardaki Claude/Agent OS ayarları eski düzende kalır.
+### 2026-10-24: VS Code ile çalışma
+- VS Code'da hangi klasörün açılacağı, ürün planının ve spec'lerin nerede durduğu anlatıldı ([9.2](#92-claudeu-hangi-klasörde-açmalıyım)).
 
 ### 2026-10-24: Ürün planı, numaralandırma ve dokümanla çalışma
 - Ürün planı yazıldı (`agent-os/product/`: misyon, 27 maddelik yol haritası, teknoloji yığını).
