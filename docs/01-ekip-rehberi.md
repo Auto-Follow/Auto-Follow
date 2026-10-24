@@ -143,7 +143,19 @@ cd ~/Desktop/Projects/Auto-Follow/Autopilot && git switch main && git pull
 cd ~/Desktop/Projects/Auto-Follow/Vision    && git switch main && git pull
 ```
 
-### 3.3 Kurulum doğru mu?
+### 3.3 Claude Code
+Bütün spec ve kod işleri Claude Code ile yapılır. Bir kere kur:
+```bash
+curl -fsSL https://claude.ai/install.sh | bash   # Claude Code'u kurar
+claude --version                                  # kuruldu mu?
+```
+İlk kez `claude` yazdığında tarayıcıda **Claude hesabınla giriş** yapman istenir (Claude Code kullanabilen bir hesap gerekir; hesabın yoksa repo sorumlusuna sor).
+VS Code kullanıyorsan "Claude Code" eklentisini de kurabilirsin (`anthropic.claude-code`).
+Claude Code kendi kendine güncellenir; sürümünün herkeste aynı olması gerekmez.
+
+Kontrol: çatı klasöründe `claude` aç ve `/agent-os` yaz. `/agent-os:shape-spec` gibi komutlar listede görünmeli.
+
+### 3.4 Kurulum doğru mu?
 ```bash
 cd ~/Desktop/Projects/Auto-Follow
 git status              # "nothing to commit, working tree clean" demeli; Autopilot/ ve Vision/ listede GÖRÜNMEMELİ
