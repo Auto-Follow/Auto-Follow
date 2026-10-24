@@ -50,7 +50,7 @@ Komutlar Claude Code'da `/agent-os:` önekiyle görünür (ör. `/agent-os:shape
 
 | Nerede çalıştırılır | Ne için |
 |---|---|
-| Bu klasör (çatı) | `/agent-os:plan-product` (sadece proje lideri) ve iki repoyu birden ilgilendiren ortak spec'ler |
+| Bu klasör (çatı) | `/agent-os:plan-product` (sadece repo sorumlusu) ve iki repoyu birden ilgilendiren ortak spec'ler |
 | `Autopilot/` veya `Vision/` | O bileşene ait spec'ler ve kod. Ürün planını `../agent-os/product/`'tan okurlar. |
 
 Ayrıntılı kurallar: [`CLAUDE.md`](CLAUDE.md).

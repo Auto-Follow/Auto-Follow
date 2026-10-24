@@ -1,7 +1,7 @@
 # Auto-Follow — çatı repo
 
 Lisans tezi: Holybro X500 V2 + Pixhawk 6C + Raspberry Pi 5 ile görüntü işleme tabanlı otomatik takip (auto-follow).
-4 kişilik ekip; proje lideri: `huseyinuygun43`. Ekiple **Türkçe** konuş.
+4 kişilik ekip; repo sorumlusu: `huseyinuygun43`. Ekiple **Türkçe** konuş.
 
 Bu dosya, Claude bu klasörde **veya altındaki** `Autopilot/` ya da `Vision/` klasörlerinde açıldığında da okunur.
 
@@ -24,7 +24,7 @@ Komutlar Claude Code'da `/agent-os:` önekiyle görünür: `/agent-os:plan-produ
 
 | Ne | Nerede | Kim |
 |---|---|---|
-| Ürün planı (mission, roadmap, tech-stack) | `agent-os/product/` (sadece çatıda) | Sadece proje lideri günceller, PR merge edildikten sonra |
+| Ürün planı (mission, roadmap, tech-stack) | `agent-os/product/` (sadece çatıda) | Sadece repo sorumlusu günceller, PR merge edildikten sonra |
 | Ortak spec'ler (iki repoyu birden ilgilendiren: Pi ↔ Pixhawk arayüzü, log formatı, uçtan uca SITL senaryosu) | `agent-os/specs/` (çatı) | Spec'i çatıda yazılır; görevleri ilgili alt repolarda PR olarak uygulanır |
 | Bileşen spec'leri (sadece PX4 ya da sadece Pi kodu) | `Autopilot/agent-os/specs/`, `Vision/agent-os/specs/` | Herkes |
 
@@ -51,4 +51,4 @@ Komutlar Claude Code'da `/agent-os:` önekiyle görünür: `/agent-os:plan-produ
 
 ## Henüz kesinleşmemiş konular
 
-Pi ↔ Pixhawk mesaj seti (ICD), hedef tespit yöntemi (klasik OpenCV / derin öğrenme), Pi kamerası ve ROS 2 kullanımı **henüz karar verilmedi**. Bunları kesinleşmiş gibi uygulama; önce proje liderine sor.
+Pi ↔ Pixhawk mesaj seti (ICD), hedef tespit yöntemi (klasik OpenCV / derin öğrenme), Pi kamerası ve ROS 2 kullanımı **henüz karar verilmedi**. Bunları kesinleşmiş gibi uygulama; önce repo sorumlusuna sor.

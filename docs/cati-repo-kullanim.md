@@ -1,236 +1,419 @@
-# Çatı repo ve Agent OS: nasıl çalışıyoruz?
+<!-- cspell:disable -->
+# Auto-Follow Ekip Rehberi
 
-> Bu doküman, projeye **üçüncü bir repo** (çatı repo) eklendikten sonra çalışma düzenimizin nasıl değiştiğini anlatır.
-> Kime: tüm ekip. Son güncelleme: 2026-10-24.
+> **Bu doküman ne?** Projede nasıl çalıştığımızı, git'e yeni başlayan birinin anlayacağı dille anlatır:
+> repolar nasıl düzenlendi, kurallar neler ve neden var, günlük iş adım adım nasıl yapılır, Claude Code ile nasıl çalışılır.
+>
+> Son güncelleme: **2026-10-24**. En sondaki **"Durum ve değişiklik günlüğü"** bölümü, yapılan ve sırada bekleyen işleri gösterir.
 
 ---
 
-## 1. Kısaca ne değişti?
+## İçindekiler
+1. [Önce küçük bir git sözlüğü](#1-önce-küçük-bir-git-sözlüğü)
+2. [Projenin yapısı: üç repo](#2-projenin-yapısı-üç-repo)
+3. [Kurulum](#3-kurulum)
+4. [Altın kurallar](#4-altın-kurallar)
+5. [Günlük çalışma: adım adım](#5-günlük-çalışma-adım-adım)
+6. [Otomatik kontroller (CI)](#6-otomatik-kontroller-ci)
+7. [GitHub'ın seni durduracağı durumlar](#7-githubın-seni-durduracağı-durumlar)
+8. ["PR'ım neden birleşmiyor?"](#8-prım-neden-birleşmiyor)
+9. [Claude Code ve Agent OS ile çalışma](#9-claude-code-ve-agent-os-ile-çalışma)
+10. [Örnek işler](#10-örnek-işler)
+11. [Pixhawk ve Raspberry Pi'ye yükleme](#11-pixhawk-ve-raspberry-piye-yükleme)
+12. [Sık karşılaşılan sorunlar](#12-sık-karşılaşılan-sorunlar)
+13. [Takıldığında](#13-takıldığında)
+14. [Durum ve değişiklik günlüğü](#14-durum-ve-değişiklik-günlüğü)
 
-Projemiz **tek bir sistem** (drone + Pi + görüntü işleme) ama kodu **iki ayrı repoda**: `Autopilot` (PX4) ve `Vision` (Pi Python). Agent OS ise "bir repo = bir ürün" varsayımıyla çalışıyor. Bu yüzden ürün planını (misyon, yol haritası, teknoloji yığını) ve iki tarafı birden ilgilendiren konuları (Pi ↔ Pixhawk arayüzü gibi) koyacak ortak bir yerimiz yoktu.
+---
 
-Çözüm: zaten herkeste aynı olan `~/Desktop/Projects/Auto-Follow/` klasörünün **kendisi** artık bir git reposu: **`Auto-Follow/Auto-Follow`** (çatı repo).
+## 1. Önce küçük bir git sözlüğü
 
-| | Önce | Şimdi |
+Bu kelimeler rehber boyunca geçiyor. Bilmiyorsan önce burayı oku.
+
+| Kelime | Ne demek (sade anlatım) |
+|---|---|
+| **repo** (repository) | Bir projenin tüm dosyaları + bütün değişiklik geçmişi. GitHub'da bir sayfa, bilgisayarında bir klasör. |
+| **klonlamak** (`git clone`) | GitHub'daki repoyu bilgisayarına indirmek. Bir kere yapılır. |
+| **commit** | "Bu noktayı kaydet" demek. Oyundaki kayıt noktası gibi: istersen sonra bu ana geri dönebilirsin. Her commit'in kısa bir açıklaması olur. |
+| **branch** (dal) | Ana koddan ayrılan kendi çalışma kopyan. Burada istediğin gibi deneme yaparsın; ana kod bozulmaz. |
+| **`main`** | Ana branch. Herkesin kullandığı, **her zaman çalışır durumda olması gereken** ortak kod. |
+| **push** (`git push`) | Bilgisayarındaki commit'leri GitHub'a göndermek. |
+| **pull** (`git pull`) | GitHub'daki yenilikleri bilgisayarına çekmek. |
+| **PR** (Pull Request) | "Benim branch'imdeki değişiklikleri `main`'e ekleyelim mi?" diye GitHub'da açılan istek. Arkadaşların burada kodunu görür, yorum yapar, onaylar. |
+| **merge** (birleştirmek) | PR onaylanınca değişikliklerin `main`'e eklenmesi. Biz **"Squash and merge"** kullanıyoruz: PR'daki tüm commit'ler `main`'e tek bir commit olarak girer. |
+| **CI** (otomatik kontroller) | Her PR'da GitHub'ın kendi kendine çalıştırdığı testler. Kodun derlenip derlenmediğine, kuralların çiğnenip çiğnenmediğine bakar. PR sayfasında yeşil ✓ veya kırmızı ✗ olarak görünür. |
+| **onay** (Approve / review) | Bir arkadaşının PR'ındaki kodu okuyup "tamam" demesi. |
+| **tag** (etiket) | Bir commit'e verilen kalıcı isim (ör. `tez-ucus-1`). "Uçuş testinde bu kodu kullandık" diye işaretlemek için. |
+| **submodule** | Bir repo içinde duran başka bir repo. PX4 bunlardan çok kullanır; **biz onlara dokunmayız.** |
+
+---
+
+## 2. Projenin yapısı: üç repo
+
+Projemiz **tek bir sistem** (drone + Pixhawk + Raspberry Pi + görüntü işleme), ama dosyalar **üç ayrı repoda** duruyor:
+
+| Repo | İçinde ne var | Kim değiştirir |
 |---|---|---|
-| `~/Desktop/Projects/Auto-Follow/` | Sıradan bir klasör | Çatı repo (GitHub: `Auto-Follow/Auto-Follow`) |
-| Ürün planı (`/plan-product`) | Autopilot'ta yazılacaktı; Vision'dan görünmüyordu | Çatıda: `agent-os/product/`. **İki repodan da okunur** |
-| İki repoyu ilgilendiren spec'ler (ICD vb.) | Yeri yoktu | Çatıda: `agent-os/specs/` |
-| Agent OS profili (standartların kaynağı) | `Autopilot/tez/agent-os/profiles/` | Çatıda: `agent-os-profilleri/` |
-| Kurulum | Repoları elle klonla | Çatıyı klonla → `./kurulum.sh` |
-| Claude kuralları (`CLAUDE.md`) | Yoktu | Çatıda ortak bir tane + her repoda kısa bir tane |
+| **Auto-Follow** (çatı repo) | Ürün planı, iki tarafı birden ilgilendiren ortak dokümanlar, Claude ayarları, kurulum scriptleri, bu rehber | Ekip PR açabilir; ürün planı ve ayarlar **repo sorumlusunun** onayıyla değişir |
+| **Autopilot** | PX4 v1.17.0 (uçuş yazılımı, Pixhawk'ta çalışır), simülasyon | Herkes (PR ile) |
+| **Vision** | Raspberry Pi 5'te çalışacak Python kodu: kamera, görüntü işleme, Pixhawk ile haberleşme | Herkes (PR ile) |
 
-**Değişmeyenler:** Autopilot ve Vision repoları, CI kontrolleri, PR/onay kuralları, PX4 sürüm kilidi, Pixhawk'a firmware yükleme ve Pi'ye kod kurma **aynen** devam ediyor.
-
----
-
-## 2. Klasör yapısı
+Bilgisayarında **herkeste aynı** şekilde durur:
 
 ```
-~/Desktop/Projects/Auto-Follow/        ← ÇATI REPO (Auto-Follow/Auto-Follow)
+~/Desktop/Projects/Auto-Follow/      ← ÇATI REPO
 ├── README.md
-├── CLAUDE.md                          ← Claude'un her oturumda okuduğu ortak kurallar
-├── kurulum.sh                         ← Autopilot + Vision'ı klonlar, Agent OS'u kurar
-├── kurulum/                           ← Agent OS kurulum/derleme scriptleri
-├── agent-os-profilleri/               ← standartların KAYNAĞI (sadece proje lideri değiştirir)
+├── CLAUDE.md                        ← Claude'un her açılışta okuduğu kurallar
+├── docs/                            ← bu rehber
+├── kurulum.sh                       ← kurulum scripti
+├── kurulum/                         ← Claude/Agent OS kurulum scriptleri
+├── agent-os-profilleri/             ← Claude'un uyduğu kuralların kaynağı (repo sorumlusu düzenler)
 ├── agent-os/
-│   ├── product/                       ← ürün planı: mission.md, roadmap.md, tech-stack.md
-│   └── specs/                         ← ortak spec'ler (iki repoyu birden ilgilendirenler)
-├── docs/                              ← bu doküman
+│   ├── product/                     ← ürün planı (misyon, yol haritası, teknolojiler)
+│   └── specs/                       ← iki repoyu birden ilgilendiren işlerin tarifleri (spec)
 │
-├── Autopilot/                         ← AYRI REPO (Auto-Follow/Autopilot): PX4 kodu
-│   ├── CLAUDE.md
-│   └── agent-os/specs/                ← sadece PX4 tarafını ilgilendiren spec'ler
-│
-└── Vision/                            ← AYRI REPO (Auto-Follow/Vision): Pi Python kodu
-    ├── CLAUDE.md
-    └── agent-os/specs/                ← sadece Pi tarafını ilgilendiren spec'ler
+├── Autopilot/                       ← AYRI REPO: PX4
+└── Vision/                          ← AYRI REPO: Raspberry Pi Python kodu
 ```
 
-**Önemli:** Bunlar **üç ayrı git reposu**. `Autopilot/` ve `Vision/` çatının içinde duruyor ama çatıya ait değiller (çatının `.gitignore`'u onları dışarıda tutuyor; submodule de değiller).
+### En önemli şey: "Hangi klasördeysen, o repodasın"
+`Autopilot/` ve `Vision/` çatı klasörün **içinde** duruyor ama çatı reponun **parçası değil**. Üçü ayrı repo.
 `git` komutunu **hangi klasörde** çalıştırırsan **o repoya** yazar:
 
 ```bash
-cd ~/Desktop/Projects/Auto-Follow            # git → çatı repo
-cd ~/Desktop/Projects/Auto-Follow/Vision     # git → Vision reposu
-git rev-parse --show-toplevel                # "şu an hangi repodayım?"
+cd ~/Desktop/Projects/Auto-Follow            # burada git → ÇATI repo
+cd ~/Desktop/Projects/Auto-Follow/Vision     # burada git → VISION repo
+cd ~/Desktop/Projects/Auto-Follow/Autopilot  # burada git → AUTOPILOT repo
+
+git rev-parse --show-toplevel                # "Şu an hangi repodayım?" sorusunun cevabı
 ```
+
+> Kodu **sadece `Autopilot/` ve `Vision/`'a** yazarız. Çatı repoya kod konmaz; sadece plan, doküman ve ayar konur.
+
+### Neden üçüncü bir repo (çatı) var?
+Claude Code ile kullandığımız **Agent OS**, işlere başlamadan önce bir **ürün planı** okur (projenin amacı, yol haritası, kullanılan teknolojiler).
+Planı Autopilot'a koysaydık Vision'da çalışan kişi göremezdi; ikisine de koysaydık iki kopya zamanla birbirinden farklılaşırdı.
+Plan artık tek yerde, çatıda duruyor ve **iki repodan da otomatik okunuyor**. Pi ↔ Pixhawk haberleşmesi gibi **iki tarafı birden ilgilendiren** konuların tarifleri de çatıda yazılıyor, böylece aynı şeyi iki repoda iki farklı şekilde tanımlamıyoruz.
 
 ---
 
 ## 3. Kurulum
 
-### 3.1 Sıfırdan (yeni bilgisayar)
+### 3.1 Hiç kurmadıysan (yeni bilgisayar)
 ```bash
-mkdir -p ~/Desktop/Projects && cd ~/Desktop/Projects
-git clone https://github.com/Auto-Follow/Auto-Follow.git
+sudo apt install -y git                                  # git yoksa kur
+mkdir -p ~/Desktop/Projects && cd ~/Desktop/Projects     # klasörü oluştur ve içine gir
+git clone https://github.com/Auto-Follow/Auto-Follow.git # çatı repoyu indir
 cd Auto-Follow
-./kurulum.sh
+./kurulum.sh                                             # Autopilot + Vision'ı indirir, Agent OS'u kurar
 ```
-`kurulum.sh` şunları yapar: Autopilot'u (submodule'leriyle) ve Vision'ı doğru yere klonlar, Agent OS v2.1.1'i `~/agent-os`'a kurar.
-Sonra her zamanki gibi: PX4 + Gazebo için `Autopilot/TEZ_README.md`, Python ortamı için `Vision/README.md`.
+Sonra:
+- PX4 + Gazebo kurulumu: `Autopilot/TEZ_README.md` → "Yeni ekip üyesi: kurulum sırası" (2. adımdan itibaren)
+- Python ortamı: `Vision/README.md`
 
-### 3.2 Zaten `~/Desktop/Projects/Auto-Follow/Autopilot` ve `Vision` klasörlerin varsa
-Klasör boş olmadığı için `git clone` çalışmaz. Çatı repoyu mevcut klasöre bağla:
+### 3.2 `Autopilot` ve `Vision` klasörlerin zaten varsa
+`~/Desktop/Projects/Auto-Follow/` klasörün dolu olduğu için `git clone` çalışmaz. Çatı repoyu mevcut klasörüne şöyle bağlarsın:
 ```bash
 cd ~/Desktop/Projects/Auto-Follow
-git init -b main
-git remote add origin https://github.com/Auto-Follow/Auto-Follow.git
-git fetch origin
-git checkout -t origin/main
-./kurulum.sh        # mevcut Autopilot/Vision klonlarına dokunmaz, sadece adreslerini kontrol eder
+git init -b main                                                       # bu klasörü bir git reposu yap
+git remote add origin https://github.com/Auto-Follow/Auto-Follow.git  # GitHub adresini tanıt
+git fetch origin                                                       # GitHub'daki dosyaları indir
+git checkout -t origin/main                                            # dosyaları klasöre yerleştir
+./kurulum.sh                                                           # Autopilot/Vision'a dokunmaz, sadece kontrol eder
 ```
-Autopilot ve Vision'da da `git switch main && git pull` yap.
+Sonra iki repoyu da güncelle:
+```bash
+cd ~/Desktop/Projects/Auto-Follow/Autopilot && git switch main && git pull
+cd ~/Desktop/Projects/Auto-Follow/Vision    && git switch main && git pull
+```
 
 ### 3.3 Kurulum doğru mu?
 ```bash
 cd ~/Desktop/Projects/Auto-Follow
-git status                  # "nothing to commit" demeli; Autopilot/ ve Vision/ listede GÖRÜNMEMELİ
-ls agent-os/                # config.yml, standards/ (plan yazıldıktan sonra product/ da)
-ls ~/agent-os/profiles/     # auto-follow, auto-follow-repo, default
+git status              # "nothing to commit, working tree clean" demeli; Autopilot/ ve Vision/ listede GÖRÜNMEMELİ
+ls ~/agent-os/profiles  # auto-follow  auto-follow-repo  default
 ```
 
 ---
 
-## 4. Claude Code ile çalışma
+## 4. Altın kurallar
 
-### 4.1 Komutların adı
-Agent OS komutları Claude Code'da **`/agent-os:` önekiyle** görünür. `/agent-os` yazınca liste açılır:
+Bu kuralların çoğunu GitHub zaten **otomatik olarak** uyguluyor; yanlışlıkla çiğneyemezsin, denersen reddedilir. Neden var olduklarını bilmek yeter.
 
-| Komut | Ne yapar |
+| # | Kural | Neden |
+|---|---|---|
+| 1 | **PX4 sürümü v1.17.0'da sabittir.** Güncelleme yok, yeni sürüme geçiş yok. | Tez boyunca uçuş yazılımı değişmesin; bugün çalışan kod yarın da çalışsın. Otomatik kontrol ediliyor. |
+| 2 | **`main`'e doğrudan yazılmaz.** Her iş kendi branch'inde yapılır, PR ile gönderilir. | Ortak kod her zaman çalışır kalsın. |
+| 3 | **PR; otomatik kontrollerin hepsi yeşil olmadan ve en az bir arkadaşın onayı olmadan birleşmez.** | Bozuk kod ortak koda girmesin; her kodu en az iki kişi görsün. |
+| 4 | **Asla `git submodule update --remote` çalıştırma.** Doğrusu: `git submodule update --init --recursive` | `--remote` PX4'ün parçalarını en yeni sürüme çeker ve sürüm kilidini bozar. |
+| 5 | **`v` ile başlayan tag açma** (ör. `v1.0`). Bizim tag'lerimiz `tez-` ile başlar (ör. `tez-ucus-1`). | PX4 firmware sürümünü `v...` tag'lerinden okur; yanlış tag firmware'i bozar. GitHub bunu zaten engelliyor. |
+| 6 | **`git` komutundan önce hangi klasörde olduğuna bak.** | Üç ayrı repo var; yanlış klasörde commit atarsan değişiklik yanlış repoya gider. |
+| 7 | **Kod sadece `Autopilot/` ve `Vision/`'a yazılır.** | Çatı repo sadece plan ve ayar içindir. |
+| 8 | **Vision kodu (`Vision/src/`) ve PX4 kodu asla `../` ile üst klasöre veya diğer repoya başvurmaz.** | Raspberry Pi'ye sadece Vision indirilir, çatı orada yoktur. Başvurursan kod Pi'de çöker. |
+| 9 | **Hiçbir araç/kütüphane "en son sürüm" diye kurulmaz.** Sürümler sabittir: `Autopilot/tez/env/VERSIONS.md`, `Vision/requirements/`. | Herkesin bilgisayarında aynı sürüm olsun; "bende çalışıyordu" sorunu yaşanmasın. Yeni araç gerekiyorsa önce repo sorumlusuna sor. |
+| 10 | **Simülatör Gazebo Harmonic'tir.** İnternetteki "Gazebo Classic" rehberleri (`gazebo-classic_...`, `.world`) bizde çalışmaz. | Ubuntu 24.04'te Gazebo Classic desteklenmiyor. |
+| 11 | **Video, log (`.ulg`), veri seti, model ağırlığı repoya konmaz.** 100 MB'tan büyük dosya zaten reddedilir. | Repo şişmesin; GitHub'ın sınırı var. |
+| 12 | **Uçuş/SITL testinde iki repoya aynı isimli `tez-*` tag'i atılır.** (Bkz. [10.4](#104-uçuş-veya-sitl-testi-sürümleri-işaretlemek)) | Autopilot ve Vision ayrı repolar; "bu testte hangi PX4 kodu hangi Pi koduyla çalıştı?" sorusunun cevabı kaybolmasın. |
+| 13 | **Emin olmadığın komutu çalıştırmadan önce sor.** Özellikle `--force`, `--remote`, `reset --hard`. | Bunlar geri alınması zor işler yapar. |
+
+---
+
+## 5. Günlük çalışma: adım adım
+
+Örnek: Vision'da "kamera okuma" özelliği üzerinde çalışacaksın. (Autopilot'ta da aynısı, sadece klasör farklı.)
+
+```bash
+# 0) Doğru klasöre gir ve en güncel main'i al
+cd ~/Desktop/Projects/Auto-Follow/Vision
+git switch main          # main branch'ine geç
+git pull                 # GitHub'daki en son hali indir
+
+# 1) Kendi branch'ini aç
+git switch -c ozellik/kamera-okuma
+#   branch adı kuralı:  ozellik/...  (yeni şey)   duzeltme/...  (hata düzeltme)   deney/...  (deneme)
+
+# 2) Çalış. Ara ara neyi değiştirdiğine bak:
+git status               # hangi dosyalar değişti?
+git diff                 # tam olarak ne değişti?
+
+# 3) Kaydet (commit)
+git add src/vision/kamera.py tests/test_kamera.py   # commit'e girecek dosyaları seç
+git commit -m "kamera: Gazebo görüntüsünü okuyan fonksiyon ekle"
+
+# 4) GitHub'a gönder
+git push -u origin ozellik/kamera-okuma             # ilk seferde böyle; sonrakilerde sadece: git push
+```
+
+5. GitHub'da repo sayfasına git. Sarı bir kutuda **"Compare & pull request"** düğmesi çıkar, ona bas. Ne yaptığını kısaca yaz ve PR'ı aç.
+6. Otomatik kontrollerin bitmesini bekle (Vision'da 1 dakikadan kısa, Autopilot'ta ~4 dk).
+7. Hepsi yeşilse bir arkadaşından **onay (Approve)** iste.
+8. Onay gelince **"Squash and merge"** düğmesine bas. Branch otomatik silinir.
+9. Bilgisayarında main'e dön ve güncelle:
+   ```bash
+   git switch main && git pull
+   ```
+
+> **Onay verirken:** Başkasının PR'ını onaylamak "bu kodu ben de okudum, mantıklı" demektir. Okumadan onaylama. Anlamadığın yeri yorum olarak sor; soru sormak da bir katkıdır.
+
+> **Commit'ten önce (Vision):** `.venv/bin/ruff format . && .venv/bin/ruff check . && .venv/bin/pytest -q`
+> **Commit'ten önce (Autopilot):** `tez/pin/verify_pin.sh --worktree` ve değiştirdiğin şeye göre `make px4_sitl`
+
+---
+
+## 6. Otomatik kontroller (CI)
+
+Her PR açıldığında GitHub bu kontrolleri **kendiliğinden** çalıştırır. PR sayfasının altında yeşil ✓ veya kırmızı ✗ olarak görürsün. Kırmızıysa yanındaki **"Details"** bağlantısına tıklayıp hata mesajını okuyabilirsin.
+
+### Autopilot
+| Kontrol | Ne yapar | Kırmızı olursa |
+|---|---|---|
+| `verify-pin` | "PX4 hâlâ v1.17.0 mı? İzin verilmeyen bir PX4 dosyasına dokunuldu mu?" diye bakar. | Muhtemelen izin verilmeyen bir PX4 dosyasını değiştirdin veya submodule güncelledin. Değişikliği geri al; gerçekten gerekiyorsa repo sorumlusuna sor. Yerelde dene: `tez/pin/verify_pin.sh --worktree` |
+| `derleme-sitl` | Kodunu temiz bir bilgisayarda **simülasyon için derler.** | Kod derlenmiyor. Hata mesajını oku, düzelt, tekrar `git push` yap (kontroller yeniden çalışır). Yerelde: `make px4_sitl` |
+| `derleme-fmu-v6c` | Kodunu **Pixhawk 6C için derler.** Firmware kartın hafızasına sığmazsa da burada yakalanır. | Derleme hatası veya hafıza taşması (`region FLASH overflowed`). Yerelde: `make px4_fmu-v6c_default`. Hafıza taşmasıysa repo sorumlusuna haber ver. |
+
+### Vision
+| Kontrol | Ne yapar | Kırmızı olursa |
+|---|---|---|
+| `ci (3.12)` / `ci (3.13)` | Kodu iki Python sürümünde test eder ve kod stilini kontrol eder (ruff). 3.12 = laptop, 3.13 = Raspberry Pi. | Yerelde: `.venv/bin/ruff format . && .venv/bin/ruff check . && .venv/bin/pytest -q`. Hataları düzelt, tekrar push et. |
+
+### Çatı repo (Auto-Follow)
+Şimdilik otomatik kontrol yok; sadece onay gerekiyor.
+
+---
+
+## 7. GitHub'ın seni durduracağı durumlar
+
+Bunlar **bilerek** böyle ayarlandı. Bir şey reddedilirse bozuk bir şey yapmadın; sadece emniyet kemeri devreye girdi.
+
+| Denersen ne olur | Neden |
 |---|---|
-| `/agent-os:plan-product` | Ürün planı (sadece çatıda, sadece proje lideri) |
-| `/agent-os:shape-spec` | Bir özelliği soru-cevapla şekillendirir |
-| `/agent-os:write-spec` | Şekillenen özellikten spec yazar |
-| `/agent-os:create-tasks` | Spec'ten görev listesi (`tasks.md`) çıkarır |
-| `/agent-os:implement-tasks` | Görevleri uygular |
-| `/agent-os:orchestrate-tasks` | Görevleri alt ajanlara dağıtarak uygular |
+| `main`'e doğrudan push → **reddedilir** | Ortak kod her zaman çalışır kalsın. |
+| `git push -f` (force-push) ile `main`'i değiştirmek → **reddedilir** | Geçmiş silinip başkalarının işi kaybolmasın. |
+| Kontroller kırmızıyken birleştirme → **engellenir** | Bozuk kod ortak koda girmesin. |
+| Onaysız birleştirme → **engellenir** | Her kodu en az iki kişi görsün. |
+| Temel dosyaları değiştirmek (sürüm kilidi, CI, bağımlılıklar, ürün planı, Claude ayarları) → **repo sorumlusunun onayı gerekir** | Bunlar projenin temeli. |
+| `v...` ile başlayan tag açmak → **reddedilir** | PX4 firmware sürümünü bu tag'lerden okur. |
+| 100 MB'tan büyük dosya → **reddedilir** | GitHub sınırı. |
 
-> `/plan-product` yazarsan bulamaz; doğrusu `/agent-os:plan-product`.
-> Yeni bir `.claude/` klasörü eklendiyse veya `git pull` ile komutlar değiştiyse Claude Code'u kapatıp yeniden aç.
+---
 
-### 4.2 Claude'u nerede açmalıyım?
+## 8. "PR'ım neden birleşmiyor?"
+
+| GitHub'da gördüğün | Anlamı | Ne yap |
+|---|---|---|
+| "Review required" | Onay yok | Bir arkadaşından onay iste |
+| "Some checks were not successful" | Otomatik kontrollerden biri kırmızı | [Bölüm 6](#6-otomatik-kontroller-ci) |
+| "This branch is out-of-date with the base branch" | Sen çalışırken `main` değişti | PR sayfasında **"Update branch"** düğmesine bas; kontroller yeniden çalışır |
+| "Waiting for review from code owners" | Temel dosyalara dokundun | Repo sorumlusunun onayı gerekiyor |
+| "Merging is blocked" | Yukarıdakilerden biri | Sayfadaki kırmızı maddeleri tek tek çöz |
+
+---
+
+## 9. Claude Code ve Agent OS ile çalışma
+
+**Claude Code**, terminalde çalışan yapay zekâ asistanıdır. **Agent OS** ise Claude'a "önce iyice planla, sonra kodla" düzenini veren bir komut setidir.
+Bu düzende her iş önce bir **spec** (iş tarifi: ne yapılacak, neden, nasıl test edilecek) olarak yazılır, sonra görevlere bölünür, sonra koda dökülür.
+
+### 9.1 Komutlar
+Komutlar Claude Code'da **`/agent-os:` önekiyle** görünür. `/agent-os` yazınca liste açılır.
+
+| Komut | Ne yapar | Sıra |
+|---|---|---|
+| `/agent-os:shape-spec` | Yapmak istediğin şeyi Claude'a anlatırsın, Claude sana sorular sorar | 1 |
+| `/agent-os:write-spec` | Cevaplardan spec dokümanı yazar | 2 |
+| `/agent-os:create-tasks` | Spec'i küçük görevlere böler (`tasks.md`) | 3 |
+| `/agent-os:implement-tasks` | Görevleri koda döker | 4 |
+| `/agent-os:orchestrate-tasks` | Görevleri birden fazla alt ajana dağıtarak uygular (büyük işler için) | 4 (alternatif) |
+| `/agent-os:plan-product` | Ürün planını yazar. **Sadece çatıda, sadece repo sorumlusu.** | — |
+
+> `/shape-spec` yazarsan bulamaz; doğrusu `/agent-os:shape-spec`.
+> Komutlar görünmüyorsa Claude Code'u kapatıp yeniden aç.
+
+### 9.2 Claude'u hangi klasörde açmalıyım?
 
 | Ne yapacaksın | Claude'u nerede aç |
 |---|---|
-| Sadece PX4 tarafı (modül, parametre, SITL) | `Autopilot/` |
+| Sadece PX4 tarafı (uçuş yazılımı, simülasyon) | `Autopilot/` |
 | Sadece Pi tarafı (kamera, görüntü işleme) | `Vision/` |
-| İki tarafı birden ilgilendiren bir şey (Pi ↔ Pixhawk mesajları, uçtan uca test senaryosu) | Çatı (`Auto-Follow/`) |
-| Ürün planı | Çatı (sadece proje lideri) |
+| İki tarafı birden ilgilendiren iş (Pi ↔ Pixhawk mesajları, uçtan uca test senaryosu) | Çatı: `Auto-Follow/` |
 
-Nerede açarsan aç, Claude **çatıdaki `CLAUDE.md`'yi de okur**. Kurallar (kilit, yasak komutlar, Gazebo Harmonic, sürüm sabitliği) her oturumda geçerlidir.
+```bash
+cd ~/Desktop/Projects/Auto-Follow/Vision
+claude
+```
 
-### 4.3 Ürün planı her yerden okunur
-`Autopilot/` veya `Vision/` içinde `/agent-os:shape-spec` çalıştırdığında Claude ürün planını otomatik olarak **bir üst klasörden** (`../agent-os/product/`) okur. Senin bir şey yapmana gerek yok.
+### 9.3 Claude neyi otomatik biliyor?
+- Nerede açarsan aç, Claude **çatıdaki `CLAUDE.md`'yi okur**. Yani kuralları (sürüm kilidi, yasak komutlar, Gazebo Harmonic, sürüm sabitliği…) her seferinde bilir.
+- `Autopilot/` veya `Vision/` içinde spec yazarken ürün planını **bir üst klasörden** (`../agent-os/product/`) kendisi okur. Senin bir şey yapmana gerek yok.
 
-Güvenlik önlemleri (test edildi):
-- Çatı repo kurulu değilse veya ürün planı henüz yazılmadıysa spec komutları **durur** ve bunu söyler; plansız spec yazılmaz.
-- Alt repolarda `/agent-os:plan-product` çalışmaz; "plan çatıda" diye yönlendirir. Böylece kimse yanlışlıkla ikinci bir ürün planı oluşturamaz.
-- Claude bileşen spec'i yazarken çatıdaki ortak spec'lere (ör. ICD) bakar ve arayüzü yeniden tanımlamak yerine onlara referans verir.
+### 9.4 Kurulmuş güvenlik önlemleri
+Bunlar denendi ve çalışıyor:
+- **Ürün planı yoksa** veya çatı repo kurulu değilse spec komutları **durur** ve bunu söyler. Plansız spec yazılmaz.
+- `Autopilot/` veya `Vision/` içinde `/agent-os:plan-product` **çalışmaz**, "plan çatıda" diye yönlendirir. Böylece kimse yanlışlıkla ikinci bir ürün planı oluşturamaz.
+- Claude bir bileşen spec'i yazarken çatıdaki ortak spec'lere (ör. Pi ↔ Pixhawk arayüzü) bakar. Aynı arayüzü yeniden tanımlamaz, onlara referans verir.
+- Henüz karar verilmemiş konularda (mesaj seti, görüntü işleme yöntemi, PX4'e eklenecek dosyaların adları ve yerleri…) Claude **tahmin etmez, sorar.**
+- Claude'un yaptığı değişiklikler de **aynı kurallara** tabidir: branch → PR → kontroller → onay.
+
+### 9.5 Ürün planı ve yol haritası
+`agent-os/product/roadmap.md` (yol haritası) **sadece repo sorumlusu tarafından** güncellenir: bir işin PR'ı birleştikten sonra ilgili madde işaretlenir.
+Claude işi bitirdiğinde roadmap'i kendisi değiştirmez, sadece raporunda "şu madde bitti" diye **önerir**. Böylece aynı dosyayı birkaç kişi aynı anda değiştirip çakışma yaşamaz.
 
 ---
 
-## 5. Örnek iş akışları
+## 10. Örnek işler
 
-### 5.1 Proje lideri: ürün planı (bir kere, sonra güncelleme)
-```bash
-cd ~/Desktop/Projects/Auto-Follow
-git switch -c plan/urun-plani
-claude                              # içinde: /agent-os:plan-product
-# agent-os/product/ altında mission.md, roadmap.md, tech-stack.md oluşur
-git add agent-os/product && git commit -m "Urun plani"
-git push -u origin plan/urun-plani  # → PR → onay → merge
-```
-`roadmap.md`'yi **sadece proje lideri** günceller (bir spec'in PR'ı merge edildikten sonra). Doğrulama ajanı roadmap'i değiştirmez, sadece "şu madde bitti" diye önerir.
-
-### 5.2 Bir ekip üyesi: sadece Pi tarafında bir özellik
+### 10.1 Sadece Pi tarafında bir özellik
 Örnek: "Gazebo kamerasından görüntü okuma"
 ```bash
 cd ~/Desktop/Projects/Auto-Follow/Vision
 git switch main && git pull
 git switch -c ozellik/kamera-okuma
 claude
-#   /agent-os:shape-spec Gazebo kamerasından görüntü okuma
-#   /agent-os:write-spec
-#   /agent-os:create-tasks
-#   /agent-os:implement-tasks
-# Spec: Vision/agent-os/specs/<tarih>-<ad>/   Kod: Vision/src/
-git push -u origin ozellik/kamera-okuma   # → Vision'da PR
 ```
+Claude içinde sırayla:
+```
+/agent-os:shape-spec Gazebo kamerasından görüntü okuma
+/agent-os:write-spec
+/agent-os:create-tasks
+/agent-os:implement-tasks
+```
+Spec `Vision/agent-os/specs/<tarih>-<isim>/` klasörüne, kod `Vision/src/` altına yazılır. Sonra [Bölüm 5](#5-günlük-çalışma-adım-adım)'teki gibi commit → push → PR.
 
-### 5.3 İki tarafı birden ilgilendiren özellik
-Örnek: "Pi, hedefin konumunu Pixhawk'a hangi MAVLink mesajıyla göndersin?" (ICD)
-1. **Çatıda** spec yazılır: Claude'u `Auto-Follow/` klasöründe aç → `/agent-os:shape-spec` → `/agent-os:write-spec`. Spec `agent-os/specs/` altına yazılır ve **çatıda PR** olur.
+> İpucu: Büyük bir işi tek PR'da yapma. Önce sadece spec'i PR olarak açıp arkadaşlarına göstermek iyi bir alışkanlıktır.
+
+### 10.2 Sadece PX4 tarafında bir özellik
+Aynısı, `Autopilot/` klasöründe. Ek dikkat:
+- PX4'ün kendi dosyalarına dokunmak **kilit listesiyle** sınırlıdır (`Autopilot/tez/pin/allowed-paths.txt`). Listede olmayan bir dosyayı değiştirmen gerekiyorsa **önce repo sorumlusuna sor.**
+- Pixhawk 6C'nin hafızası **neredeyse dolu (~%98)**. Yeni PX4 modülü eklemeden önce yer açılması planlanıyor.
+
+### 10.3 İki tarafı birden ilgilendiren iş
+Örnek: "Pi, takip edilen hedefin bilgisini Pixhawk'a hangi mesajla göndersin?"
+1. **Önce çatıda ortak spec yazılır:** Claude'u `Auto-Follow/` klasöründe aç → `/agent-os:shape-spec` → `/agent-os:write-spec`. Spec `agent-os/specs/` altına yazılır ve **çatı repoda PR** olur.
 2. Spec onaylanınca uygulama **iki repoda ayrı ayrı** yapılır:
-   - `Vision/`'da gönderen taraf → Vision PR'ı
-   - `Autopilot/`'ta alan taraf → Autopilot PR'ı
-   - Her iki repoda da bileşen spec'i, çatıdaki ICD spec'ine referans verir.
-3. PR açıklamalarında birbirine ve çatıdaki spec'e link verilir.
+   - Gönderen taraf `Vision/`'da → Vision'da PR
+   - Alan taraf `Autopilot/`'ta → Autopilot'ta PR
+3. PR açıklamalarında birbirine ve çatıdaki spec'e link ver.
 
-> Kural: Bir bileşen spec'i ortak bir arayüzü değiştirmek isterse **önce çatıdaki ortak spec değişir**, sonra kod.
+> Kural: Ortak bir arayüz (mesaj formatı gibi) değişecekse **önce çatıdaki ortak spec değişir**, sonra kod.
 
-### 5.4 Uçuş veya SITL testi: hangi sürümler birlikte çalıştı?
-Autopilot ve Vision ayrı repolar olduğu için "bu testte hangi PX4 kodu hangi Pi koduyla çalıştı?" bilgisi kendiliğinden kaydedilmez. Bu yüzden her testte **iki repoya aynı isimli tag** atılır:
+### 10.4 Uçuş veya SITL testi: sürümleri işaretlemek
+Her test/uçuştan önce, kullanılan kodu **iki repoda aynı isimle** işaretle:
 ```bash
-git -C ~/Desktop/Projects/Auto-Follow/Autopilot tag tez-ucus-1 && git -C ~/Desktop/Projects/Auto-Follow/Autopilot push origin tez-ucus-1
-git -C ~/Desktop/Projects/Auto-Follow/Vision    tag tez-ucus-1 && git -C ~/Desktop/Projects/Auto-Follow/Vision    push origin tez-ucus-1
+cd ~/Desktop/Projects/Auto-Follow/Autopilot && git tag tez-ucus-1 && git push origin tez-ucus-1
+cd ~/Desktop/Projects/Auto-Follow/Vision    && git tag tez-ucus-1 && git push origin tez-ucus-1
 ```
-Tag'ler **`tez-`** ile başlar (`v` ile başlayan tag yasak).
+Aylar sonra "1. uçuşta hangi kod vardı?" diye sorulduğunda cevap `tez-ucus-1` tag'idir.
 
 ---
 
-## 6. Pixhawk ve Raspberry Pi'ye yükleme: değişen bir şey yok
+## 11. Pixhawk ve Raspberry Pi'ye yükleme
 
-| | Nasıl | Çatı repo etkiler mi? |
+Çatı reponun eklenmesi bunları **hiç değiştirmedi**:
+
+| İş | Nasıl | Not |
 |---|---|---|
-| Pixhawk 6C firmware | `cd Autopilot && make px4_fmu-v6c_default upload` | **Hayır.** Derleme sadece `Autopilot/` içini görür; firmware sürüm bilgisi Autopilot'un kendi git geçmişinden okunur. |
-| SITL | `cd Autopilot && make px4_sitl gz_x500` | **Hayır.** |
-| Raspberry Pi | Pi'ye **sadece Vision** klonlanır (`Vision/README.md`) | **Hayır.** Pi çatı repoyu hiç görmez. |
-| GitHub CI | Her repo kendi CI'ını çalıştırır | **Hayır.** CI sadece o repoyu klonlar. |
-
-Bunun hep böyle kalması için kural: **`Vision/src/` ve PX4 kodu asla `../` ile çatıya veya diğer repoya başvurmaz.** (Pi'de çatı yok; CI'da diğer repo yok.)
+| Pixhawk 6C'ye firmware yüklemek | `cd Autopilot && make px4_fmu-v6c_default upload` | Derleme sadece `Autopilot/` içini görür. |
+| Simülasyon | `cd Autopilot && make px4_sitl gz_x500` | |
+| Raspberry Pi'ye kod kurmak | Pi'ye **sadece Vision** indirilir (`Vision/README.md`) | Pi çatı repoyu hiç görmez. Bu yüzden Kural 8 önemli. |
+| GitHub kontrolleri | Her repo kendi kontrolünü çalıştırır | Kontroller sadece o repoyu görür. |
 
 ---
 
-## 7. Standartları değiştirmek (sadece proje lideri)
-
-Claude'un uyduğu kurallar (`agent-os/standards/`) **elle düzenlenmez**; bir sonraki derlemede silinir. Kaynak çatıdaki profillerdir:
-
-| Profil | Nerede kullanılır | İçerik |
-|---|---|---|
-| `agent-os-profilleri/auto-follow` | Çatı | Tüm proje standartları (PX4, Python, Gazebo, test) + ajan değişiklikleri |
-| `agent-os-profilleri/auto-follow-repo` | Autopilot, Vision | `auto-follow`'un aynısı; sadece "ürün planını `../`'dan oku" farkı var |
-
-Değiştirme adımları:
-```bash
-cd ~/Desktop/Projects/Auto-Follow
-# 1) agent-os-profilleri/auto-follow/standards/... dosyasını düzenle
-kurulum/install-agent-os.sh       # profilleri ~/agent-os'a bağlar (sabit v2.1.1)
-kurulum/agent-os-derle.sh         # çatı + Autopilot + Vision'ı yeniden derler
-# 2) Üç repoda ayrı ayrı: git status → branch → PR
-```
-> `project-install.sh --re-install` **kullanılmaz**: `agent-os/specs/` ve `product/` klasörlerini siler. `agent-os-derle.sh` bunları korur.
-
----
-
-## 8. Sık karşılaşılan durumlar
+## 12. Sık karşılaşılan sorunlar
 
 | Durum | Sebep | Çözüm |
 |---|---|---|
-| `/plan-product` bulunamıyor | Komutların adı `/agent-os:` önekli | `/agent-os:plan-product` |
-| Komutlar hiç görünmüyor | Claude Code, `.claude/` eklenmeden önce açılmış | Claude Code'u kapatıp yeniden aç |
-| Vision'da spec komutu "çatı repo kurulu değil / ürün planı yok" diyor | Çatı klonlanmamış veya plan henüz yazılmamış | Bölüm 3.2; plan yoksa proje liderini bekle |
-| Vision'da `plan-product` "bu repoda çalıştırılmaz" diyor | Bilerek böyle | Ürün planı sadece çatıda |
-| Çatıda `git status`'ta `Autopilot/` görünüyor | `.gitignore` bozulmuş | Commit etme; proje liderine haber ver |
-| Çatıya yeni bir dosya ekledim ama `git status`'ta görünmüyor | Çatının `.gitignore`'u **beyaz liste**: sadece izin verilenler girer | Gerçekten gerekiyorsa `.gitignore`'a `!/<ad>` eklenir (proje lideri onayı) |
-| Yanlış repoya commit attım | Yanlış klasörde `git commit` | Push etmediysen: `git reset --soft HEAD~1`, doğru klasöre geç. Push ettiysen proje liderine sor |
+| Yanlış repoya commit attım, **push etmedim** | Yanlış klasörde `git commit` | `git reset --soft HEAD~1` (commit geri alınır, değişikliklerin kaybolmaz), doğru klasöre geç |
+| Yanlış repoya commit attım, **push ettim** | | Kendin düzeltmeye çalışma; repo sorumlusuna sor |
+| `main`'de çalıştığımı fark ettim (henüz commit yok) | Branch açmayı unuttun | `git switch -c ozellik/<ad>`: değişikliklerin yeni branch'e taşınır |
+| Çatıda `git status`'ta `Autopilot/` veya `Vision/` görünüyor | Ayar bozulmuş | Commit etme; repo sorumlusuna haber ver |
+| Çatıya bir dosya koydum ama `git status`'ta görünmüyor | Çatı repo **sadece izin verilen** dosya/klasörleri kabul eder | Gerçekten gerekiyorsa repo sorumlusuna sor |
+| `/shape-spec` bulunamıyor | Komutların adı `/agent-os:` önekli | `/agent-os:shape-spec` |
+| Spec komutu "çatı repo kurulu değil / ürün planı yok" diyor | Çatı klonlanmamış veya plan henüz yazılmadı | [3.2](#32-autopilot-ve-vision-klasörlerin-zaten-varsa); plan yoksa repo sorumlusunu bekle |
+| `verify_pin` → "yerel submodule'lar kayıtlı commit'te değil" | Submodule'ler doğru konumda değil | `git submodule update --init --recursive` (**`--remote` DEĞİL**) |
+| Eski adresle (`Algan-Otopilot`) klonlamıştım, push reddediliyor | Proje taşındı; eski adresler salt okunur | `git remote set-url origin https://github.com/Auto-Follow/Autopilot.git` (Vision için `.../Vision.git`) |
+
+PX4 kurulum/derleme sorunları için: `Autopilot/TEZ_README.md` → "Sorun giderme".
 
 ---
 
-## 9. Özet: beş madde
+## 13. Takıldığında
 
-1. Klasör = repo: `Auto-Follow/` çatı, `Autopilot/` ve `Vision/` ayrı repolar. `git`'ten önce hangi klasörde olduğuna bak.
-2. Kod sadece `Autopilot/` ve `Vision/`'a yazılır; çatıda sadece plan, ortak spec ve ayar olur.
-3. Ürün planı çatıda; spec komutları onu her yerden otomatik okur. Planı sadece proje lideri değiştirir.
-4. İki tarafı ilgilendiren konu → önce çatıda ortak spec, sonra iki repoda ayrı PR.
-5. Test/uçuş → iki repoya aynı isimli `tez-*` tag'i.
+1. Önce bu rehberdeki tablolara ve `Autopilot/TEZ_README.md` → "Sorun giderme" bölümüne bak.
+2. Hata mesajını **olduğu gibi** kopyalayıp gruba yaz (ekran görüntüsü de olur). "Çalışmıyor" yerine "şu komutu çalıştırdım, şu mesajı aldım" yaz.
+3. Emin olmadığın bir komutu çalıştırmadan önce sor. Soru sormak hiçbir zaman sorun değil; bozulan `main`'i düzeltmek sorun.
+
+---
+
+## 14. Durum ve değişiklik günlüğü
+
+### Sırada bekleyenler
+- [ ] Çatı repo `Auto-Follow/Auto-Follow`'un GitHub'da açılması (diğer repolarla aynı korumalar: PR + 1 onay, temel dosyalarda repo sorumlusu onayı)
+- [ ] Autopilot PR'ı: Agent OS ayarlarının çatıya taşınması, `CLAUDE.md`, kilit listesi değişiklikleri (aşağıda)
+- [ ] Vision PR'ı: Agent OS ayarlarının çatıya taşınması, `CLAUDE.md`, README güncellemesi
+- [ ] Ürün planının yazılması (`/agent-os:plan-product`, çatıda, repo sorumlusu). **Bu yapılmadan spec komutları çalışmaz** (bilerek böyle).
+- [ ] Pixhawk 6C'de yer açmak (kullanılmayan PX4 modüllerini kapatan özel kart ayarı); ilk PX4 modülünden önce
+- [ ] Bu rehberin ekip ile birlikte gözden geçirilmesi
+
+> Yukarıdaki ilk üç madde bitene kadar bu rehberdeki GitHub bağlantıları (`Auto-Follow/Auto-Follow`) ve [3. bölümdeki](#3-kurulum) kurulum adımları çalışmayabilir.
+
+### 2026-10-24: Çatı repo ve Agent OS düzeni
+**Ne yapıldı (sade anlatım):**
+- `~/Desktop/Projects/Auto-Follow/` klasörü kendi başına bir repo (**çatı repo**) oldu. Ürün planı, ortak spec'ler, Claude ayarları ve bu rehber burada.
+- Claude'un uyduğu kuralların kaynağı (Agent OS **profilleri**) Autopilot'tan çatıya taşındı. İki profil var:
+  - `auto-follow` → çatı için
+  - `auto-follow-repo` → Autopilot ve Vision için (tek farkı: ürün planını bir üst klasörden okur)
+- Her yerde Claude'un otomatik okuduğu **`CLAUDE.md`** dosyaları eklendi (çatıda ortak kurallar, her repoda kısa ek kurallar).
+- Alt repolarda ürün planı yoksa spec yazılmasını durduran ve `plan-product`'ı çatıya yönlendiren **güvenlik önlemleri** eklendi ve Claude ile denendi.
+- Kurulum tek komuta indirildi: `./kurulum.sh`.
+
+**Düzeltilen bir hata: `_tez` isimleri**
+- Daha önce Claude'un kurallarına, **karar verilmeden** bazı örnek isimler yazılmıştı: PX4 parametreleri `TEZ_...`, modüller `tez_...`, simülasyon dosyası `..._gz_x500_tez`. Bu isimlerde **gerçek bir dosya hiç oluşturulmadı**; sadece kurallarda geçiyorlardı.
+- Ayrıca sürüm kilidi listesine, henüz var olmayan bu simülasyon dosyaları için 4 PX4 dosyasında değişiklik izni eklenmişti.
+- İkisi de kaldırıldı. Bu konularda karar verilene kadar Claude artık isim önermez, sorar. Karar verilince ilgili izin ayrı ve açık bir PR ile eklenecek.
+
+**Sürüm kilidi listesindeki değişiklikler** (`Autopilot/tez/pin/allowed-paths.txt`):
+- Eklendi: `CLAUDE.md` (Claude kuralları; PX4'ün kendi dosyası değil)
+- Çıkarıldı: `ROMFS/.../airframes/*_gz_x500_tez*`, `ROMFS/.../airframes/CMakeLists.txt`, `ROMFS/.../px4-rc.gzsim`, `src/modules/simulation/gz_bridge/gz_env.sh.in`
+
+**Değişmeyenler:** PX4 sürümü, otomatik kontroller, PR/onay kuralları, Pixhawk'a ve Pi'ye yükleme.
