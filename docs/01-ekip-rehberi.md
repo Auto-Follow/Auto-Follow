@@ -6,6 +6,11 @@
 >
 > Son güncelleme: **2026-10-24**. En sondaki **"Durum ve değişiklik günlüğü"** bölümü, yapılan ve sırada bekleyen işleri gösterir.
 
+> [!WARNING]
+> **Çalışmaya başlamadan önce iki kural**
+> 1. **Her iş, yol haritasındaki numaralı bir maddeye bağlıdır.** Yol haritası: [`agent-os/product/roadmap.md`](../agent-os/product/roadmap.md). Maddenin numarası işinin **her yerinde** görünür. Örneğin 7. madde için branch `ozellik/m07-...`, spec klasörü `<tarih>-m07-...`, PR başlığı `[M07] ...`. Ayrıntı: [9.6](#96-numaralandırma-her-iş-bir-yol-haritası-maddesine-bağlı).
+> 2. **Dokümanla çalışılır.** Koda başlamadan önce o işin spec dokümanı yazılır. Aldığın kararlar, nedenleri, test sonuçları ve karşılaştığın sorunlar spec klasörüne yazılır. Dokümanı olmayan iş, tezde "yapıldı" sayılmaz.
+
 ### `docs/` klasöründeki dokümanlar
 | Dosya | Ne için | Kim için |
 |---|---|---|
@@ -23,6 +28,8 @@
 3. [Kurulum](#3-kurulum)
 4. [Altın kurallar](#4-altın-kurallar)
 5. [Günlük çalışma: adım adım](#5-günlük-çalışma-adım-adım)
+   - [5.1 Küçük ve sık commit](#51-küçük-ve-sık-commit)
+   - [5.2 Hatalı ilerledim: nasıl geri dönerim?](#52-hatalı-ilerledim-nasıl-geri-dönerim)
 6. [Otomatik kontroller (CI)](#6-otomatik-kontroller-ci)
 7. [GitHub'ın seni durduracağı durumlar](#7-githubın-seni-durduracağı-durumlar)
 8. ["PR'ım neden birleşmiyor?"](#8-prım-neden-birleşmiyor)
@@ -136,7 +143,19 @@ cd ~/Desktop/Projects/Auto-Follow/Autopilot && git switch main && git pull
 cd ~/Desktop/Projects/Auto-Follow/Vision    && git switch main && git pull
 ```
 
-### 3.3 Kurulum doğru mu?
+### 3.3 Claude Code
+Bütün spec ve kod işleri Claude Code ile yapılır. Bir kere kur:
+```bash
+curl -fsSL https://claude.ai/install.sh | bash   # Claude Code'u kurar
+claude --version                                  # kuruldu mu?
+```
+İlk kez `claude` yazdığında tarayıcıda **Claude hesabınla giriş** yapman istenir (Claude Code kullanabilen bir hesap gerekir; hesabın yoksa repo sorumlusuna sor).
+VS Code kullanıyorsan "Claude Code" eklentisini de kurabilirsin (`anthropic.claude-code`).
+Claude Code kendi kendine güncellenir; sürümünün herkeste aynı olması gerekmez.
+
+Kontrol: çatı klasöründe `claude` aç ve `/agent-os` yaz. `/agent-os:shape-spec` gibi komutlar listede görünmeli.
+
+### 3.4 Kurulum doğru mu?
 ```bash
 cd ~/Desktop/Projects/Auto-Follow
 git status              # "nothing to commit, working tree clean" demeli; Autopilot/ ve Vision/ listede GÖRÜNMEMELİ
@@ -163,7 +182,10 @@ Bu kuralların çoğunu GitHub zaten **otomatik olarak** uyguluyor; yanlışlık
 | 10 | **Simülatör Gazebo Harmonic'tir.** İnternetteki "Gazebo Classic" rehberleri (`gazebo-classic_...`, `.world`) bizde çalışmaz. | Ubuntu 24.04'te Gazebo Classic desteklenmiyor. |
 | 11 | **Video, log (`.ulg`), veri seti, model ağırlığı repoya konmaz.** 100 MB'tan büyük dosya zaten reddedilir. | Repo şişmesin; GitHub'ın sınırı var. |
 | 12 | **Uçuş/SITL testinde iki repoya aynı isimli `tez-*` tag'i atılır.** (Bkz. [10.4](#104-uçuş-veya-sitl-testi-sürümleri-işaretlemek)) | Autopilot ve Vision ayrı repolar; "bu testte hangi PX4 kodu hangi Pi koduyla çalıştı?" sorusunun cevabı kaybolmasın. |
-| 13 | **Emin olmadığın komutu çalıştırmadan önce sor.** Özellikle `--force`, `--remote`, `reset --hard`. | Bunlar geri alınması zor işler yapar. |
+| 13 | **Küçük ve sık commit at.** Her çalışan adım ayrı bir commit olur (Claude ile çalışırken bunu Claude kendisi yapar). | Hatalı bir yöne gidersen, en son çalışan duruma kolayca dönebilesin. (Bkz. [5.1](#51-küçük-ve-sık-commit)) |
+| 14 | **Her iş numaralı bir yol haritası maddesine bağlıdır; numara branch, spec, commit ve PR adında görünür.** (Bkz. [9.6](#96-numaralandırma-her-iş-bir-yol-haritası-maddesine-bağlı)) | Kimin neyi, hangi madde için yaptığı her yerden takip edilebilsin; tez raporunda iş ↔ sonuç bağlantısı kaybolmasın. |
+| 15 | **Dokümanla çalış:** önce spec, sonra kod; kararlar, nedenleri ve test sonuçları spec klasörüne yazılır. | Dokümanı olmayan iş tezde savunulamaz; arkadaşın işini devraldığında nerede kaldığını görebilsin. |
+| 16 | **Emin olmadığın komutu çalıştırmadan önce sor.** Özellikle `--force`, `--remote`, `reset --hard`. | Bunlar geri alınması zor işler yapar. |
 
 ---
 
@@ -178,8 +200,9 @@ git switch main          # main branch'ine geç
 git pull                 # GitHub'daki en son hali indir
 
 # 1) Kendi branch'ini aç
-git switch -c ozellik/kamera-okuma
-#   branch adı kuralı:  ozellik/...  (yeni şey)   duzeltme/...  (hata düzeltme)   deney/...  (deneme)
+git switch -c ozellik/m09-kamera-okuma
+#   branch adı kuralı:  ozellik/mNN-...  (yeni iş; NN = yol haritası madde numarası)
+#                       duzeltme/mNN-... (hata düzeltme)   deney/mNN-... (deneme)
 
 # 2) Çalış. Ara ara neyi değiştirdiğine bak:
 git status               # hangi dosyalar değişti?
@@ -206,6 +229,46 @@ git push -u origin ozellik/kamera-okuma             # ilk seferde böyle; sonrak
 
 > **Commit'ten önce (Vision):** `.venv/bin/ruff format . && .venv/bin/ruff check . && .venv/bin/pytest -q`
 > **Commit'ten önce (Autopilot):** `tez/pin/verify_pin.sh --worktree` ve değiştirdiğin şeye göre `make px4_sitl`
+
+### 5.1 Küçük ve sık commit
+
+Commit'i bir **kayıt noktası** gibi düşün. Ne kadar sık kayıt alırsan, bir şey bozulduğunda o kadar az iş kaybedersin.
+
+- **Ne zaman commit?** Her küçük ama **çalışan** adımda: bir fonksiyon yazıldı ve testi geçti → commit. Bir hata düzeltildi → commit. Akşam bıraktın → o ana kadar çalışanı commit'le.
+- **Ne kadar büyük?** Bir commit tek bir şeyi anlatsın. "Kamera okuma + hedef seçimi + README" yerine üç ayrı commit.
+- **Mesaj:** Neyi yaptığını kısaca yaz: `kamera: Gazebo görüntüsünü okuyan fonksiyon ekle`. "düzeltme", "deneme2" gibi mesajlar sonra işe yaramaz.
+- **Push:** Commit'ler önce sadece senin bilgisayarında durur. Günün sonunda (veya önemli bir adımdan sonra) `git push` ile kendi branch'ini GitHub'a gönder. Böylece bilgisayarına bir şey olsa da işin kaybolmaz. Kendi branch'ine push etmek `main`'i etkilemez.
+
+**Claude ile çalışırken:** Claude (Agent OS komutlarıyla veya komutsuz) bunu **kendisi yapar**:
+- Spec aşamalarında: `/agent-os:shape-spec`, `/agent-os:write-spec`, `/agent-os:create-tasks` bittikçe spec klasörünü commit'ler.
+- Uygulamada: `/agent-os:implement-tasks` her **görev grubunu** bitirince önce kontrolleri (testler, `verify_pin`, derleme) çalıştırır, geçerse o grubu **tek bir commit** olarak kaydeder. Mesaj şöyle olur: `<spec-adı>: Görev grubu 2 — hedef vektörü hesaplama`.
+- Kontroller geçmezse commit atmaz, sana hatayı söyler.
+- `main`'deysen hiç başlamaz, önce branch açmanı ister.
+- **Push yapmaz.** Push'u sen yaparsın.
+
+### 5.2 Hatalı ilerledim: nasıl geri dönerim?
+
+Önce **geçmişe bak**. Her satır bir commit (kayıt noktası), en üstteki en yenisi:
+```bash
+git log --oneline
+#   a1b2c3d kamera-okuma: Görev grubu 3 — hedef seçimi        ← bozuk çıktı
+#   9f8e7d6 kamera-okuma: Görev grubu 2 — piksel → body frame  ← burası çalışıyordu
+#   5c4b3a2 kamera-okuma: Görev grubu 1 — kamera okuma
+```
+
+Sonra durumuna uyan satırı seç (en güvenliden en tehlikeliye):
+
+| Durum | Komut | Ne olur |
+|---|---|---|
+| Henüz commit etmediğim değişiklikleri çöpe atmak istiyorum (tek dosya) | `git restore <dosya>` | O dosya son commit'teki hâline döner. **Kaydedilmemiş değişiklik kaybolur.** |
+| Eski bir hâle sadece **bakmak** istiyorum | `git switch --detach 9f8e7d6` → bak/dene → geri dön: `git switch -` | Hiçbir şey silinmez. |
+| Bir commit'in yaptığını **geri almak** istiyorum (push ettiysem de güvenli) | `git revert a1b2c3d` | O commit'i tersine çeviren **yeni bir commit** oluşur. Geçmiş silinmez. **İlk tercihin bu olsun.** |
+| Son commit'i geri almak istiyorum ama değişiklikler dursun (**push etmediysem**) | `git reset --soft HEAD~1` | Commit kalkar, dosyalardaki değişikliklerin yerinde kalır. |
+| Branch'imi tamamen eski bir noktaya döndürmek istiyorum (**push etmediysem**) | Önce yedek: `git branch yedek/kamera-okuma`  sonra: `git reset --hard 9f8e7d6` | O noktadan sonraki **her şey silinir** (yedek branch'te durur). Emin değilsen sor. |
+
+> **Kurallar:** Bu komutları sadece **kendi branch'inde** kullan, `main`'de asla. Push ettiğin bir commit'i geri almak için **sadece `git revert`** kullan. `reset --hard` ve `push -f` kullanmadan önce mutlaka sor.
+>
+> Claude'a da söyleyebilirsin: *"Görev grubu 3'ten önceki hâle dönmek istiyorum, nasıl yaparız?"* Claude seçenekleri anlatır ama `reset --hard` gibi geri alınamayan işleri **sen onaylamadan yapmaz**.
 
 ---
 
@@ -302,10 +365,35 @@ Bunlar denendi ve çalışıyor:
 - Claude bir bileşen spec'i yazarken çatıdaki ortak spec'lere (ör. Pi ↔ Pixhawk arayüzü) bakar. Aynı arayüzü yeniden tanımlamaz, onlara referans verir.
 - Henüz karar verilmemiş konularda (mesaj seti, görüntü işleme yöntemi, PX4'e eklenecek dosyaların adları ve yerleri…) Claude **tahmin etmez, sorar.**
 - Claude'un yaptığı değişiklikler de **aynı kurallara** tabidir: branch → PR → kontroller → onay.
+- Claude çalışırken **küçük ve sık commit** atar (her spec aşaması, her görev grubu), `main`'de çalışmaz ve push yapmaz. Ayrıntı: [5.1](#51-küçük-ve-sık-commit).
 
 ### 9.5 Ürün planı ve yol haritası
 `agent-os/product/roadmap.md` (yol haritası) **sadece repo sorumlusu tarafından** güncellenir: bir işin PR'ı birleştikten sonra ilgili madde işaretlenir.
 Claude işi bitirdiğinde roadmap'i kendisi değiştirmez, sadece raporunda "şu madde bitti" diye **önerir**. Böylece aynı dosyayı birkaç kişi aynı anda değiştirip çakışma yaşamaz.
+
+### 9.6 Numaralandırma: her iş bir yol haritası maddesine bağlı
+
+Yol haritasındaki ([`agent-os/product/roadmap.md`](../agent-os/product/roadmap.md)) her maddenin bir numarası var (1, 2, 3 … 27). Bir işe başlarken **önce hangi maddeye ait olduğunu bul.** Bu numara iki haneli yazılır (`m07`) ve işinin her yerinde görünür:
+
+| Nerede | Biçim | Örnek (7. madde: algılama modelinin seçimi) |
+|---|---|---|
+| Branch | `ozellik/mNN-<kısa-ad>` | `ozellik/m07-algilama-modeli` |
+| Spec klasörü | `<tarih>-mNN-<kısa-ad>` | `Vision/agent-os/specs/2026-10-25-m07-algilama-modeli/` |
+| Commit | `<spec-klasörü>: ...` | `2026-10-25-m07-algilama-modeli: Görev grubu 1 — aday modellerin ölçümü` |
+| PR başlığı | `[MNN] <başlık>` | `[M07] Algılama modelinin seçimi` |
+
+- `/agent-os:shape-spec` çalıştırdığında Claude önce "bu iş yol haritasının kaçıncı maddesi?" diye sorar (açıksa kendisi bulur) ve klasör adına numarayı koyar.
+- Yol haritasında olmayan küçük bir iş mi? Repo sorumlusuna sor; onaylanırsa numara `m00` olur.
+- Neden? Tezde "7. maddeyi kim yaptı, hangi PR'da, hangi test sonucuyla?" sorusunun cevabı tek aramayla bulunur.
+
+### 9.7 Dokümanla çalışmak
+
+Bu projede **doküman, işin kendisidir.** Tez sonunda yazılacak rapor bu dokümanlardan derlenecek.
+- **Önce spec, sonra kod:** `/agent-os:shape-spec` → `/agent-os:write-spec` → `/agent-os:create-tasks` → `/agent-os:implement-tasks`.
+- **Kararları yaz:** "Neden bu modeli/yöntemi seçtik?" sorusunun cevabı spec klasöründe olmalı. Seçmediğin seçenekleri ve nedenlerini de yaz.
+- **Sonuçları yaz:** Test ettiğin şeyin sonucunu (sayılar, log adı, `tez-*` tag'i) yaz. "Çalışıyor" yerine "şu testte şu sonucu verdi" yaz.
+- **Sorunları yaz:** Takıldığın yeri ve nasıl çözdüğünü yaz. Bir sonraki kişi aynı yerde zaman kaybetmesin.
+- **Kodla birlikte güncelle:** Kodu değiştirdiysen ilgili dokümanı da aynı PR'da güncelle.
 
 ---
 
@@ -316,7 +404,7 @@ Claude işi bitirdiğinde roadmap'i kendisi değiştirmez, sadece raporunda "şu
 ```bash
 cd ~/Desktop/Projects/Auto-Follow/Vision
 git switch main && git pull
-git switch -c ozellik/kamera-okuma
+git switch -c ozellik/m09-kamera-okuma      # örnek: yol haritasında ilgili madde 9 ise
 claude
 ```
 Claude içinde sırayla:
@@ -326,7 +414,7 @@ Claude içinde sırayla:
 /agent-os:create-tasks
 /agent-os:implement-tasks
 ```
-Spec `Vision/agent-os/specs/<tarih>-<isim>/` klasörüne, kod `Vision/src/` altına yazılır. Sonra [Bölüm 5](#5-günlük-çalışma-adım-adım)'teki gibi commit → push → PR.
+Spec `Vision/agent-os/specs/<tarih>-m09-<isim>/` klasörüne, kod `Vision/src/` altına yazılır. Sonra [Bölüm 5](#5-günlük-çalışma-adım-adım)'teki gibi commit → push → PR.
 
 > İpucu: Büyük bir işi tek PR'da yapma. Önce sadece spec'i PR olarak açıp arkadaşlarına göstermek iyi bir alışkanlıktır.
 
@@ -397,14 +485,25 @@ PX4 kurulum/derleme sorunları için: `Autopilot/TEZ_README.md` → "Sorun gider
 ## 14. Durum ve değişiklik günlüğü
 
 ### Sırada bekleyenler
-- [ ] Çatı repo `Auto-Follow/Auto-Follow`'un GitHub'da açılması (diğer repolarla aynı korumalar: PR + 1 onay, temel dosyalarda repo sorumlusu onayı)
-- [ ] Autopilot PR'ı: Agent OS ayarlarının çatıya taşınması, `CLAUDE.md`, kilit listesi değişiklikleri (aşağıda)
-- [ ] Vision PR'ı: Agent OS ayarlarının çatıya taşınması, `CLAUDE.md`, README güncellemesi
-- [ ] Ürün planının yazılması (`/agent-os:plan-product`, çatıda, repo sorumlusu). **Bu yapılmadan spec komutları çalışmaz** (bilerek böyle).
+- [x] Çatı repo `Auto-Follow/Auto-Follow` GitHub'da açıldı (2026-10-24). Korumalar diğer repolarla aynı: PR + 1 onay, temel dosyalarda repo sorumlusu onayı.
+- [ ] **Onay bekliyor:** [Autopilot PR #14](https://github.com/Auto-Follow/Autopilot/pull/14): Agent OS ayarlarının çatıya taşınması, `CLAUDE.md`, kilit listesi değişiklikleri (aşağıda)
+- [ ] **Onay bekliyor:** [Vision PR #6](https://github.com/Auto-Follow/Vision/pull/6): aynı uyarlama, `CLAUDE.md`, README güncellemesi
+- [ ] İki PR birleşince **herkes**: çatı repoyu kendi klasörüne bağlar ([3.2](#32-autopilot-ve-vision-klasörlerin-zaten-varsa)) ve Autopilot/Vision'da `git switch main && git pull` yapar
+- [x] Ürün planı yazıldı: [`agent-os/product/`](../agent-os/product/) (misyon, 27 maddelik yol haritası, teknoloji yığını). Bu PR birleşince spec komutları çalışmaya başlar.
+- [ ] **Ekip:** yol haritasının ilk maddelerinden iş seçip `/agent-os:shape-spec` ile başlamak (bkz. [9.6](#96-numaralandırma-her-iş-bir-yol-haritası-maddesine-bağlı), [10](#10-örnek-işler))
 - [ ] Pixhawk 6C'de yer açmak (kullanılmayan PX4 modüllerini kapatan özel kart ayarı); ilk PX4 modülünden önce
 - [ ] Bu rehberin ekip ile birlikte gözden geçirilmesi
 
-> Yukarıdaki ilk üç madde bitene kadar bu rehberdeki GitHub bağlantıları (`Auto-Follow/Auto-Follow`) ve [3. bölümdeki](#3-kurulum) kurulum adımları çalışmayabilir.
+> Autopilot ve Vision PR'ları birleşene kadar, o repolardaki Claude/Agent OS ayarları eski düzende kalır.
+
+### 2026-10-24: Ürün planı, numaralandırma ve dokümanla çalışma
+- Ürün planı yazıldı (`agent-os/product/`: misyon, 27 maddelik yol haritası, teknoloji yığını).
+- Her iş yol haritasındaki madde numarasıyla anılır: branch `ozellik/mNN-...`, spec klasörü `<tarih>-mNN-...`, PR `[MNN] ...`. Claude spec açarken numarayı sorar. ([9.6](#96-numaralandırma-her-iş-bir-yol-haritası-maddesine-bağlı))
+- "Dokümanla çalış" kuralı eklendi ([9.7](#97-dokümanla-çalışmak)). Rehberin başına uyarı kutusu kondu.
+
+### 2026-10-24: Küçük ve sık commit kuralı
+- Ekip hatalı ilerlediğinde önceki çalışan duruma dönebilsin diye **her anlamlı adım ayrı bir commit** olur. Altın kurallara 13. madde eklendi; anlatım: [5.1](#51-küçük-ve-sık-commit), geri dönme yolları: [5.2](#52-hatalı-ilerledim-nasıl-geri-dönerim).
+- Claude bunu otomatik yapar: spec aşamaları ve her görev grubu bittikçe (kontroller geçerse) commit atar; `main`'de çalışmaz; push yapmaz.
 
 ### 2026-10-24: Dokümanlar `docs/` altında toplandı
 - Dokümanlar numaralandırıldı: `01-ekip-rehberi.md` (bu rehber), `02-ortak-yazilim-surumleri.md` (eski adı `ORTAK-SURUMLER.md`), `05-ekip-rehberi-ilk-taslak.md` (eski taslak, arşiv).

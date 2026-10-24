@@ -5,6 +5,8 @@ Hiçbir şeyi kendi başına güncelleme; güncelleme gerekiyorsa önce ekipçe 
 
 Son güncelleme: 24 Ekim 2026
 
+> Bu doküman ürün planındaki teknoloji yığınının ([`agent-os/product/tech-stack.md`](../agent-os/product/tech-stack.md)) **sade özetidir**; ikisi birbiriyle tutarlı tutulur. Tam sürüm listesi: `Autopilot/tez/env/VERSIONS.md` ve `Vision/requirements/`. Bir sürüm değişirse hepsi **aynı PR'da** güncellenir; bunu repo sorumlusu onaylar.
+
 ---
 
 ## 1. Laptop — mutlaka herkeste aynı olmalı
@@ -45,7 +47,12 @@ SD karta yazarken Raspberry Pi Imager'da listeden seçme; **"Use custom"** ile b
 |---|---|
 | Gövde | Holybro **X500 V2** |
 | Uçuş kontrolcüsü | Holybro **Pixhawk 6C** |
-| Yardımcı bilgisayar | **Raspberry Pi 5** (Pixhawk'ın TELEM2 portuna bağlanacak) |
+| Yardımcı bilgisayar | **Raspberry Pi 5** (Pixhawk'a bağlantı yöntemi henüz kesin değil; şu anki öngörü TELEM2 seri port — yol haritası madde 4'te kesinleşecek) |
+| Yapay zekâ hızlandırıcı | **Hailo AI Kit** (Pi 5 üzerinde). Yazılımı ve sürümü **henüz sabitlenmedi**; Pi OS Trixie uyumu yol haritası madde 2'de doğrulanacak. O zamana kadar Hailo için kendi başına paket kurma. |
+| Kamera | **Raspberry Pi Camera Module 3** |
+| Güç / GPS / telemetri | PM02 V3 güç modülü · Holybro M8N GPS · SiK Telemetry Radio V3 (915 MHz) |
+| Motor / ESC / pervane | Holybro 2216 KV920 · BLHeli S 20A ESC · 1045 pervane (4'er adet) |
+| Henüz seçilmedi | RC kumanda, batarya, yer istasyonuna görüntü aktarım donanımı |
 | Pixhawk firmware | Autopilot reposundan derlenir: `make px4_fmu-v6c_default` (hazır PX4 firmware'i **yükleme**) |
 | Airframe | `SYS_AUTOSTART = 4019` (Holybro X500 V2) |
 
@@ -72,13 +79,19 @@ SD karta yazarken Raspberry Pi Imager'da listeden seçme; **"Use custom"** ile b
 
 Kurulumu tek tek yapma; repodaki adımları sırayla izle:
 
-1. **Klasör yapısı** (herkeste aynı):
+1. **Çatı repo + iki repo + Agent OS** (tek komut; ayrıntı: [`01-ekip-rehberi.md` → 3. Kurulum](01-ekip-rehberi.md#3-kurulum)):
+   ```bash
+   mkdir -p ~/Desktop/Projects && cd ~/Desktop/Projects
+   git clone https://github.com/Auto-Follow/Auto-Follow.git
+   cd Auto-Follow && ./kurulum.sh
    ```
-   ~/Desktop/Projects/Auto-Follow/
+   Sonuç (herkeste aynı):
+   ```
+   ~/Desktop/Projects/Auto-Follow/   ← çatı repo
    ├── Autopilot/
    └── Vision/
    ```
-2. **Autopilot kurulumu:** https://github.com/Auto-Follow/Autopilot/blob/main/TEZ_README.md → "Yeni ekip üyesi: kurulum sırası"
+2. **Autopilot kurulumu (PX4 + Gazebo):** https://github.com/Auto-Follow/Autopilot/blob/main/TEZ_README.md → "Yeni ekip üyesi: kurulum sırası"
 3. **Tam sürüm listesi ve kurulum komutları** (QGroundControl, Gazebo dondurma, geliştirme araçları): https://github.com/Auto-Follow/Autopilot/blob/main/tez/env/VERSIONS.md
 4. **Vision kurulumu (laptop ve Pi):** https://github.com/Auto-Follow/Vision#readme
 
@@ -118,6 +131,7 @@ Bir satır farklı çıkarsa **kendin düzeltmeye çalışma**, çıktıyı grub
 - ❌ QGroundControl'ün başka bir sürümünü indirmek
 - ❌ `pip install --upgrade ...` ile paket yükseltmek
 - ❌ PX4'ü GitHub'daki orijinal PX4 reposundan klonlamak — **sadece** `Auto-Follow/Autopilot` kullan
-- ❌ Agent OS'u resmi sitesindeki komutla kurmak (o komut v3 kurar)
+- ❌ Agent OS'u resmi sitesindeki komutla kurmak (o komut v3 kurar) — çatı repodaki `./kurulum.sh` kullanılır
+- ❌ Hailo için internetteki rehberlerden "en güncel" paketleri kurmak — sürüm yol haritası madde 2'de belirlenip buraya yazılacak
 - ❌ Pi'ye Raspberry Pi Imager listesinden "en güncel" sürümü yazmak — **sadece** yukarıdaki imaj dosyası
 - ❌ Pixhawk'a QGroundControl'ün sunduğu hazır PX4 firmware'ini yüklemek — firmware Autopilot reposundan derlenir

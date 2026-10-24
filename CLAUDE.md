@@ -42,13 +42,27 @@ Komutlar Claude Code'da `/agent-os:` önekiyle görünür: `/agent-os:plan-produ
 1. **PX4 v1.17.0'da kalıcı kilitli.** Güncelleme, yükseltme, upstream `pull` yok. İzin verilen PX4 yolları: `Autopilot/tez/pin/allowed-paths.txt`. Kontrol: `Autopilot/tez/pin/verify_pin.sh --worktree`.
 2. **Yasak komutlar:** `git submodule update --remote` (doğrusu `git submodule update --init --recursive`), `main`'e doğrudan push, force-push, `v*` tag açmak (PX4 firmware sürümünü bu tag'lerden okur).
 3. **Her değişiklik:** branch → PR → CI yeşil → en az 1 onay → squash merge. Claude'un yaptığı değişiklikler de bu yoldan geçer.
-4. **Sürüm sabitliği:** hiçbir araç/paket "en son sürüm"e kaymaz. Sabit sürümler: `Autopilot/tez/env/VERSIONS.md` (Vision Python paketleri: `Vision/requirements/`). Yeni araç sabit sürümüyle oraya yazılmadan kullanılmaz.
+4. **Sürüm sabitliği:** hiçbir araç/paket "en son sürüm"e kaymaz. Sabit sürümler: `Autopilot/tez/env/VERSIONS.md` (Vision Python paketleri: `Vision/requirements/`). Yeni araç sabit sürümüyle oraya yazılmadan kullanılmaz. Ekip özeti `docs/02-ortak-yazilim-surumleri.md`; bir sürüm değişirse `VERSIONS.md`, `Vision/requirements/`, `docs/02-...` ve `agent-os/product/tech-stack.md` aynı PR'da güncellenir.
 5. **Simülatör Gazebo Harmonic** (`gz_*` hedefleri). Gazebo Classic (`gazebo-classic_*`, `.world`) kullanılmaz.
 6. **Uyumlu sürümler:** bir SITL testi veya uçuş için kullanılan Autopilot ve Vision commit'leri, **iki repoda aynı isimli** `tez-*` tag'iyle işaretlenir (ör. `tez-ucus-1`).
 7. **Alt repolar çatıya çalışma zamanında bağımlı olamaz:** `Vision/src/` ve PX4 kodu `../` yoluyla çatıdaki veya diğer repodaki dosyalara başvurmaz (Raspberry Pi'ye sadece `Vision` klonlanır; CI sadece tek repoyu görür).
 8. **Çatının köküne araç ayar dosyası konmaz** (`pyproject.toml`, `setup.cfg`, `pytest.ini`, `ruff.toml`, `conftest.py`, `.clang-format`, `.editorconfig`): bu araçlar ayar dosyasını üst klasörlerde de arar.
 9. Video, log (`.ulg`), veri seti, model ağırlığı ve 100 MB'tan büyük dosya hiçbir repoya girmez.
+10. **Küçük ve sık commit:** Ekip hatalı ilerlediğinde önceki çalışan duruma dönebilmelidir. Bir branch'te çalışırken her anlamlı adım ayrı commit olur. Bunu kullanıcı ayrıca istemese de yap:
+    - Spec aşamaları: `shape-spec`, `write-spec`, `create-tasks` her biri bitince spec klasörü commit edilir (`<spec-klasor-adi>: requirements` / `: spec` / `: tasks`).
+    - Uygulama: her görev grubu bitince, ilgili kontroller geçtikten sonra commit edilir (`<spec-klasor-adi>: Görev grubu <N> — <ne yapıldı>`). Agent OS kullanılmadan yapılan işlerde de aynı ölçü: her çalışan adım bir commit.
+    - Önce branch kontrolü: `main`'deysen commit atma, kullanıcıya branch açmasını söyle. Dosyaları adıyla ekle (`git add -A` / `git add .` kullanma); kullanıcının işe ait olmayan değişikliklerini commit'e katma.
+    - Commit atmak serbest; **push, amend, rebase, `reset --hard`, branch silme** kullanıcı istemeden yapılmaz.
+11. **Her iş numaralı bir yol haritası maddesine bağlıdır ve dokümanla yürür:**
+    - Numara `agent-os/product/roadmap.md`'deki madde numarasıdır, iki haneli yazılır: `m07`. Plana uymayan küçük işler kullanıcı onayıyla `m00`.
+    - Branch `ozellik/m07-<ad>` · spec klasörü `<tarih>-m07-<ad>` · commit `<spec-klasor-adi>: ...` · PR başlığı `[M07] <başlık>`.
+    - Kod yazmadan önce spec dokümanı olur (`/agent-os:shape-spec` → `write-spec` → `create-tasks`). Kararlar, gerekçeler, test sonuçları ve karşılaşılan sorunlar o spec klasörüne yazılır; doküman koddan geri kalmaz.
+    - Kullanıcı numarasız veya spec'siz bir işe başlamak isterse önce bunu hatırlat ve hangi maddeye ait olduğunu sor.
 
 ## Henüz kesinleşmemiş konular
 
-Pi ↔ Pixhawk mesaj seti (ICD), hedef tespit yöntemi (klasik OpenCV / derin öğrenme), Pi kamerası ve ROS 2 kullanımı **henüz karar verilmedi**. Bunları kesinleşmiş gibi uygulama; önce repo sorumlusuna sor.
+Ürün planı: `agent-os/product/` (misyon, 27 maddelik yol haritası, teknoloji yığını). **Kesin olan ve olmayan her şeyin listesi `agent-os/product/tech-stack.md`'dedir** ("Kesin" / "Karar bekliyor").
+
+Kesin donanım: Raspberry Pi 5 + **Hailo AI Kit** + **Raspberry Pi Camera Module 3**; hazır (önceden eğitilmiş) insan algılama modeli kullanılır, model eğitimi kapsam dışı.
+
+**Karar bekliyor** (kesinleşmiş gibi uygulama; ilgili yol haritası maddesinde araştırılıp gerekçesiyle karara bağlanır, emin değilsen repo sorumlusuna sor): hangi algılama modeli, Hailo yazılım yığını ve sürümleri (Pi OS Trixie uyumu doğrulanmadı), Pi ↔ Pixhawk haberleşme yöntemi ve ICD, kontrol algoritması, takip modunun PX4'e entegrasyon yaklaşımı, simülasyon kamerası ve hareketli insan hedefi, laptop'ta Hailo'suz algılama, RC, batarya, görüntü aktarımı, ROS 2 (taslak: kullanılmıyor), başarı kriterlerinin sayısal değerleri.
