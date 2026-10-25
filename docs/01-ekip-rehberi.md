@@ -505,6 +505,21 @@ PX4 kurulum/derleme sorunları için: `Autopilot/TEZ_README.md` → "Sorun gider
 
 ## 14. Durum ve değişiklik günlüğü
 
+### Görev dağılımı (sınav dönemi, toplantı yok)
+Her görevin ayrıntısı, ne zaman "bitti" sayılacağı ve nasıl ilerleneceği kendi issue'sunda yazılı. **İşe başlamadan önce kendi issue'nu oku.**
+
+| Kişi | Görev | Issue | Son teslim |
+|---|---|---|---|
+| Yusuf Ortatepe | Pikselden body frame'e: adımların şeması ve açıklaması (m10) | [#8](https://github.com/Auto-Follow/Auto-Follow/issues/8) | 8 Kasım 2026 |
+| Hüseyin Uygun | Genel sistem eksikleri (m00) | [#9](https://github.com/Auto-Follow/Auto-Follow/issues/9) | 8 Kasım 2026 |
+| Yusuf Kurt | Body frame hedef vektöründen PWM'e: PX4 takip kodu (m15) | [#6](https://github.com/Auto-Follow/Auto-Follow/issues/6) | 15 Kasım 2026 |
+| Ahmet Kazalcı | Simülasyon ortamı: Gazebo kamera → model → PX4 → simülasyon (m06) | [#7](https://github.com/Auto-Follow/Auto-Follow/issues/7) | 15 Kasım 2026 |
+
+Tüm görevler: [issue listesi](https://github.com/Auto-Follow/Auto-Follow/issues). Teslim tarihleri GitHub'da kilometre taşı olarak da görünür: [Milestones](https://github.com/Auto-Follow/Auto-Follow/milestones).
+
+- Dokümanlarını ve şemalarını **gruba değil repoya** koy: kendi spec klasörünün `planning/visuals/` klasörüne.
+- Bu üç iş birbirine bağlı: m10'un ürettiği body frame, m15'in girdisi; m06'daki simülasyon da ikisini birleştirecek. Eksenleri ve kamera açısını birbirinizle konuşarak aynı tutun.
+
 ### Sırada bekleyenler
 - [x] Çatı repo `Auto-Follow/Auto-Follow` GitHub'da açıldı (2026-10-24). Korumalar diğer repolarla aynı: PR + 1 onay, temel dosyalarda repo sorumlusu onayı.
 - [x] Autopilot ve Vision'daki Agent OS uyarlaması, `CLAUDE.md` dosyaları ve isimlendirme düzeltmesi `main`'e birleşti (2026-10-24).
@@ -517,7 +532,7 @@ PX4 kurulum/derleme sorunları için: `Autopilot/TEZ_README.md` → "Sorun gider
 ### 2026-10-25: Model eğitimi kapsama alındı, ortak spec'ler ertelendi
 - İnsan algılama modelinin eğitimi artık projenin parçası: uçuşlarda görüntü toplanacak, etiketlenip veri seti oluşturulacak ve model bu veri setiyle eğitilecek. Yol haritasına bunun için **Aşama 8 (madde 26–29)** eklendi; değerlendirme ve tez raporu 30 ve 31 numara oldu. Yol haritası artık 31 madde.
 - Veri seti ve model dosyaları yine **repoya konmaz** (altın kural 11); ortak bir depolama alanında tutulur (hangisi olduğu henüz seçilmedi).
-- Ortak spec'ler (madde 3, 4, 5) şimdilik yazılmayacak; gereksinimler netleşince yazılacak. O zamana kadar bunlara dayanan maddelere (10, 11, 12, 16, 18, 19, 23) başlanmaz.
+- Ortak spec'ler (madde 3, 4, 5) şimdilik yazılmayacak; gereksinimler netleşince yazılacak. Bunlara dayanan işlerde frame, eksen, birim gibi konular kendi spec'inde **"Varsayımlar"** başlığı altında açıkça yazılır.
 
 ### 2026-10-24: VS Code ile çalışma
 - VS Code'da hangi klasörün açılacağı, ürün planının ve spec'lerin nerede durduğu anlatıldı ([9.2](#92-claudeu-hangi-klasörde-açmalıyım)).

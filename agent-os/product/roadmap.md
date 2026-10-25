@@ -66,7 +66,7 @@ Repo kısaltmaları: **Çatı** = `Auto-Follow` (ortak spec'ler `agent-os/specs/
 
 > Notlar
 > - Sıralama teknik bağımlılığa ve ürün tanımındaki aşamalara göredir. Bağımsız maddeler (ör. 7–9, 13) paralel yürütülebilir; ancak ICD'ye (madde 5) dayanan işler ICD onaylanmadan başlamaz.
-> - **Ortak spec'ler (madde 3, 4, 5) henüz yazılmayacak** (2026-10-25): gereksinimler netleştikçe ileride yazılacak. O zamana kadar frame tanımlarına, haberleşme yöntemine veya ICD'ye dayanan maddelere (10, 11, 12, 16, 18, 19, 23) başlanmaz. Bunlardan bağımsız yürütülebilenler: 2, 6, 7, 9, 13 (sentetik veriyle), 14, 15 ve 26 (kayıt özelliğinin geliştirilmesi).
+> - **Ortak spec'ler (madde 3, 4, 5) henüz yazılmayacak** (2026-10-25): gereksinimler netleştikçe ileride yazılacak. Bunlara dayanan maddelerde (ör. 10, 11, 12, 16) çalışılabilir; frame, eksen, birim ve mesaj gibi konular o maddenin spec'inde "Varsayımlar" başlığı altında açıkça yazılır ve ortak spec yazılınca ona göre güncellenir.
 > - Aşama 8'in uçuş verisi, Aşama 7'deki uçuşlarda (madde 22 ve 25) toplanır; kayıt özelliği (madde 26) bu uçuşlardan önce hazır olmalıdır.
 > - Her madde uçtan uca ve doğrulanabilir bir sonuçtur (SITL'de, bench'te veya uçuşta). Bir maddenin kodlanmış olması tamamlandığı anlamına gelmez; açıklamadaki doğrulama yapılmış olmalıdır.
 > - İki repoyu birden ilgilendiren işler (mimari, coordinate frame'ler, ICD, uçtan uca SITL senaryosu) çatı repoda `agent-os/specs/` altında spec'lenir; görevler ilgili alt repolarda ayrı PR'larla uygulanır.

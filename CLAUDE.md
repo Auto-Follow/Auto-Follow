@@ -65,7 +65,7 @@ Komutlar Claude Code'da `/agent-os:` önekiyle görünür: `/agent-os:plan-produ
 
 Ürün planı: `agent-os/product/` (misyon, 31 maddelik yol haritası, teknoloji yığını). **Kesin olan ve olmayan her şeyin listesi `agent-os/product/tech-stack.md`'dedir** ("Kesin" / "Karar bekliyor").
 
-**Ortak spec'ler (yol haritası 3, 4, 5) şimdilik yazılmıyor**; gereksinimler netleşince yazılacak. Bunlara dayanan maddeler (10, 11, 12, 16, 18, 19, 23) için spec açılmak istenirse kullanıcıya bunu hatırlat.
+**Ortak spec'ler (yol haritası 3, 4, 5) şimdilik yazılmıyor**; gereksinimler netleşince yazılacak. Bunlara dayanan maddelerde (ör. 10, 11, 12, 16) çalışılabilir, ama frame, eksen, birim, mesaj gibi ortak spec'e ait konular spec'te **"Varsayımlar"** başlığı altında açıkça yazılır ve kesinleşmiş gibi sunulmaz; ortak spec yazılınca bu spec'ler ona göre güncellenir.
 
 Kesin donanım: Raspberry Pi 5 + **Hailo AI Kit** + **Raspberry Pi Camera Module 3**; insan algılama modeli **eğitimi kapsamdadır**: uçuşlarda görüntü toplanır, etiketlenip veri seti oluşturulur ve model bu veri setiyle eğitilir (yol haritası Aşama 8). Veri seti ve model dosyaları repoya girmez (kural 9).
 
