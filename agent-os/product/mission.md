@@ -1,17 +1,17 @@
 # Ürün Misyonu
 
-Son güncelleme: 2026-10-24
+Son güncelleme: 2026-10-25
 
 > Bu dosya, kullanıcının ürün tanımına (Follow Me İHA — Product Tanımı) dayanır. Ürün planını yalnızca repo sorumlusu, ilgili PR merge edildikten sonra günceller.
 
 ## Pitch
 
-**Auto-Follow**, hareket eden bir insanı kamera görüntüsü üzerinden algılayıp belirli bir mesafeden otonom olarak takip eden bir İHA sistemidir. Hazır bir insan algılama modelinin çıktısını geometrik hesaplamalarla İHA'nın body coordinate frame'ine aktaran ve bu bilgiyi PX4 Autopilot'a entegre edilmiş özel bir takip modunda kullanan bir lisans tezi prototipidir.
+**Auto-Follow**, hareket eden bir insanı kamera görüntüsü üzerinden algılayıp belirli bir mesafeden otonom olarak takip eden bir İHA sistemidir. Bir insan algılama modelinin çıktısını geometrik hesaplamalarla İHA'nın body coordinate frame'ine aktaran ve bu bilgiyi PX4 Autopilot'a entegre edilmiş özel bir takip modunda kullanan bir lisans tezi prototipidir.
 
 Sistem; Holybro X500 V2 gövde, Pixhawk 6C (PX4 v1.17.0), Raspberry Pi 5, Hailo AI Kit ve Raspberry Pi Camera Module 3 üzerine kurulur. Önce simülasyonda (Gazebo Harmonic, SITL), ardından kontrollü donanım testlerinde doğrulanır ve bütün süreç akademik olarak raporlanır.
 
 ### Proje ve repo adı hakkında
-Ürün bir "Follow Me İHA" olarak tanımlanır; ancak proje ve repo adı bilinçli olarak daha genel seçilmiştir: **Auto-Follow**. Gerekçe: çalışma ileride başka bir yönde sürdürülebilir (ör. bir insan algılama modelinin eğitilmesi) ve süreç bu tezin kapsamının ötesine taşınabilir.
+Ürün bir "Follow Me İHA" olarak tanımlanır; ancak proje ve repo adı bilinçli olarak daha genel seçilmiştir: **Auto-Follow**. Gerekçe: proje yalnızca takip modundan ibaret değildir; uçuşlarda veri toplanması ve insan algılama modelinin eğitilmesi de projenin parçasıdır ve çalışma ileride bu yönde, bu tezin kapsamının ötesine taşınabilir.
 
 ## Kullanıcılar
 
@@ -72,7 +72,8 @@ Her bileşen önce Gazebo Harmonic + PX4 SITL ortamında doğrulanır; donanıma
 ## Temel Özellikler
 
 ### Çekirdek özellikler
-- **İnsan algılama:** Hazır bir insan algılama modeli ile kamera görüntüsündeki kişi belirlenir (model henüz seçilmedi).
+- **İnsan algılama:** Kamera görüntüsündeki kişi bir insan algılama modeli ile belirlenir. Önce hazır modeller ve açık veri setleriyle yapılan deneme eğitimleri kullanılır; sonra ekibin kendi veri setiyle eğittiği model kullanılır (model henüz seçilmedi).
+- **Veri toplama ve model eğitimi:** Uçuşlarda kamera görüntüsü kaydedilir, ekip bu görüntüleri etiketleyerek kendi veri setini oluşturur ve insan algılama modelini bu veri setiyle eğitir. Eğitilen model, başlangıç modeliyle ölçülerek karşılaştırılır.
 - **Hedef konumlandırma:** Hedefin piksel konumu, kamera parametreleri ve koordinat dönüşümleriyle İHA'nın body frame'inde bir hedef vektörüne çevrilir.
 - **Otonom takip modu:** PX4'e entegre edilen özel mod, hedef vektörünü kullanarak İHA'yı hedefi belirli bir mesafeden takip edecek şekilde yönlendirir.
 - **Güvenli davranış:** Hedef kaybolduğunda, veri geçersiz veya eski olduğunda ya da haberleşme gecikmesinde sistem tanımlı ve güvenli bir davranışa geçer.
@@ -88,7 +89,6 @@ Her bileşen önce Gazebo Harmonic + PX4 SITL ortamında doğrulanır; donanıma
 
 ## Kapsam dışı
 
-- **İnsan algılama modelinin eğitilmesi** (veri seti toplama, etiketleme, eğitim, ince ayar) bu tez kapsamında yoktur; hazır, önceden eğitilmiş bir model kullanılır. Model eğitimi ileride ayrı bir yön olarak ele alınabilir; proje adının genel tutulmasının nedeni budur.
 - PX4'ü sıfırdan yazmak veya PX4 sürümünü yükseltmek (PX4 v1.17.0'da kalıcı olarak kilitlidir).
 - Yeni MAVLink mesajı veya dialect tanımlamak (haberleşme, PX4 v1.17.0'ın zaten desteklediği mesajlarla yapılır).
 - Ticari ürün düzeyinde güvenilirlik, sertifikasyon veya genel kullanıcılara dağıtım.
@@ -101,7 +101,7 @@ Her bileşen önce Gazebo Harmonic + PX4 SITL ortamında doğrulanır; donanıma
 - **Planlanan, uygulanan, test edilen ve doğrulanan** işler birbirinden açıkça ayrılır. Kodlanmış olmak, çalıştığının kanıtı değildir.
 - Test edilmemiş veya doğrulanmamış sonuçlar başarılı olarak sunulmaz; performans iddiaları yalnızca ölçülen verilerin desteklediği kadar yapılır.
 - Teknik kararlar gerekçeleriyle belgelenir; kod değişikliğiyle birlikte ilgili dokümantasyon da güncellenir.
-- Henüz belirlenmemiş donanım ve yöntemler (algılama modeli, haberleşme yöntemi, kontrol algoritması, PX4 entegrasyon yaklaşımı, RC, batarya, görüntü aktarımı vb.) kesinleşmiş gibi sunulmaz.
+- Henüz belirlenmemiş donanım ve yöntemler (algılama modeli, eğitim çerçevesi ve ortamı, etiketleme aracı, haberleşme yöntemi, kontrol algoritması, PX4 entegrasyon yaklaşımı, RC, batarya, görüntü aktarımı vb.) kesinleşmiş gibi sunulmaz.
 - Görüntü işleme (`Vision` reposu) ile kontrol (`Autopilot` reposu) arasındaki sorumluluk sınırı korunur; ortak arayüz çatı repoda (`agent-os/specs/`) tanımlanır ve iki taraf ona uyar.
 - İş, `main` üzerinde değil bir özellik branch'inde küçük ve sık adımlarla commit edilir (ör. her spec aşamasından ve her tamamlanan görev grubundan sonra); böylece yanlış yöne gidildiğinde daha önceki çalışan bir duruma dönülebilir.
 - Commit mesajları açıklayıcıdır ve ilgili spec'e/görev grubuna atıf yapar.

@@ -4,7 +4,7 @@
 > **Bu doküman ne?** Projede nasıl çalıştığımızı, git'e yeni başlayan birinin anlayacağı dille anlatır:
 > repolar nasıl düzenlendi, kurallar neler ve neden var, günlük iş adım adım nasıl yapılır, Claude Code ile nasıl çalışılır.
 >
-> Son güncelleme: **2026-10-24**. En sondaki **"Durum ve değişiklik günlüğü"** bölümü, yapılan ve sırada bekleyen işleri gösterir.
+> Son güncelleme: **2026-10-25**. En sondaki **"Durum ve değişiklik günlüğü"** bölümü, yapılan ve sırada bekleyen işleri gösterir.
 
 > [!WARNING]
 > **Çalışmaya başlamadan önce iki kural**
@@ -393,7 +393,7 @@ Claude işi bitirdiğinde roadmap'i kendisi değiştirmez, sadece raporunda "şu
 
 ### 9.6 Numaralandırma: her iş bir yol haritası maddesine bağlı
 
-Yol haritasındaki ([`agent-os/product/roadmap.md`](../agent-os/product/roadmap.md)) her maddenin bir numarası var (1, 2, 3 … 27). Bir işe başlarken **önce hangi maddeye ait olduğunu bul.** Bu numara iki haneli yazılır (`m07`) ve işinin her yerinde görünür:
+Yol haritasındaki ([`agent-os/product/roadmap.md`](../agent-os/product/roadmap.md)) her maddenin bir numarası var (1, 2, 3 … 31). Bir işe başlarken **önce hangi maddeye ait olduğunu bul.** Bu numara iki haneli yazılır (`m07`) ve işinin her yerinde görünür:
 
 | Nerede | Biçim | Örnek (7. madde: algılama modelinin seçimi) |
 |---|---|---|
@@ -508,11 +508,16 @@ PX4 kurulum/derleme sorunları için: `Autopilot/TEZ_README.md` → "Sorun gider
 ### Sırada bekleyenler
 - [x] Çatı repo `Auto-Follow/Auto-Follow` GitHub'da açıldı (2026-10-24). Korumalar diğer repolarla aynı: PR + 1 onay, temel dosyalarda repo sorumlusu onayı.
 - [x] Autopilot ve Vision'daki Agent OS uyarlaması, `CLAUDE.md` dosyaları ve isimlendirme düzeltmesi `main`'e birleşti (2026-10-24).
-- [x] Ürün planı yazıldı ve `main`'de: [`agent-os/product/`](../agent-os/product/) (misyon, 27 maddelik yol haritası, teknoloji yığını).
+- [x] Ürün planı yazıldı ve `main`'de: [`agent-os/product/`](../agent-os/product/) (misyon, yol haritası, teknoloji yığını).
 - [ ] **Herkes:** kurulumu yapar ([3](#3-kurulum)). Autopilot ve Vision klasörün zaten varsa [3.2](#32-autopilot-ve-vision-klasörlerin-zaten-varsa)'yi uygular, sonra her repoda `git switch main && git pull` yapar.
 - [ ] **Ekip:** yol haritasından kendisine verilen maddeyi `/agent-os:shape-spec` ile başlatır (bkz. [9.6](#96-numaralandırma-her-iş-bir-yol-haritası-maddesine-bağlı), [10](#10-örnek-işler)).
 - [ ] Pixhawk 6C'de yer açmak (kullanılmayan PX4 modüllerini kapatan özel kart ayarı); ilk PX4 modülünden önce
 - [ ] Bu rehberin ekip ile birlikte gözden geçirilmesi
+
+### 2026-10-25: Model eğitimi kapsama alındı, ortak spec'ler ertelendi
+- İnsan algılama modelinin eğitimi artık projenin parçası: uçuşlarda görüntü toplanacak, etiketlenip veri seti oluşturulacak ve model bu veri setiyle eğitilecek. Yol haritasına bunun için **Aşama 8 (madde 26–29)** eklendi; değerlendirme ve tez raporu 30 ve 31 numara oldu. Yol haritası artık 31 madde.
+- Veri seti ve model dosyaları yine **repoya konmaz** (altın kural 11); ortak bir depolama alanında tutulur (hangisi olduğu henüz seçilmedi).
+- Ortak spec'ler (madde 3, 4, 5) şimdilik yazılmayacak; gereksinimler netleşince yazılacak. O zamana kadar bunlara dayanan maddelere (10, 11, 12, 16, 18, 19, 23) başlanmaz.
 
 ### 2026-10-24: VS Code ile çalışma
 - VS Code'da hangi klasörün açılacağı, ürün planının ve spec'lerin nerede durduğu anlatıldı ([9.2](#92-claudeu-hangi-klasörde-açmalıyım)).
