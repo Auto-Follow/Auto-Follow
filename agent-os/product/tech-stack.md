@@ -75,8 +75,13 @@ Son güncelleme: 2026-10-24
 |---|---|---|
 | Çıkarım donanımı | Hailo AI Kit (Pi 5 üzerinde) | Kesin (donanım) |
 | Hailo yazılım yığını (runtime, sürücü, Python paketleri) ve sürümleri | Pi OS Trixie / Python 3.13 uyumu doğrulanmadı, sürümler sabitlenmedi | Karar bekliyor / doğrulanacak |
-| İnsan algılama modeli | Hazır, önceden eğitilmiş bir model; hangisi olduğu seçilmedi | Karar bekliyor |
-| Model eğitimi | Kapsam dışı | Kesin (yapılmayacak) |
+| İnsan algılama modeli | Önce hazır/deneme modeli (madde 7), sonra uçuş verisiyle ekibin eğittiği model (madde 28); hangisi olduğu seçilmedi | Karar bekliyor |
+| Model eğitimi | **Kapsamda:** uçuşlarda toplanan görüntülerden etiketlenen kendi veri setimizle eğitim (Aşama 8) | Kesin |
+| Eğitim çerçevesi ve başlangıç ağırlıkları | Deneme eğitimleri YOLOv8s (Ultralytics) ile COCO ağırlıklarından transfer learning olarak yapıldı; kesin seçim değil, sürüm sabitlenmedi. Lisans (Ultralytics: AGPL-3.0) seçimde değerlendirilir | Karar bekliyor |
+| Modelin Hailo formatına dönüştürülmesi | Dönüşüm aracı ve sürümü seçilmedi (madde 7) | Karar bekliyor |
+| Eğitim ortamı (donanım) ve eğitim kodunun yeri | Seçilmedi. Eğitim paketleri Pi'nin `Vision/requirements/` dosyalarına karışmaz | Karar bekliyor |
+| Etiketleme aracı ve etiket formatı | Seçilmedi (madde 27) | Karar bekliyor |
+| Veri seti ve model dosyalarının saklandığı yer | Repo dışında ortak bir depolama alanı; hangisi olduğu seçilmedi | Karar bekliyor |
 
 ## 6. Görüntü işleme ↔ kontrol haberleşmesi
 

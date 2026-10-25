@@ -1,8 +1,8 @@
 # Ürün Yol Haritası
 
-Son güncelleme: 2026-10-24
+Son güncelleme: 2026-10-25
 
-Maddeler teknik bağımlılık sırasına göre dizilmiştir ve ürün tanımındaki 8 aşamayı izler. Her madde uçtan uca, doğrulanabilir bir sonuçtur; nasıl doğrulanacağı açıklamada yazılıdır. "Karar" geçen maddelerde önce seçenekler araştırılır, seçim gerekçesiyle belgelenir, sonra uygulanır.
+Maddeler teknik bağımlılık sırasına göre dizilmiştir ve ürün tanımındaki 8 aşamayı izler; model eğitimi için ayrı bir aşama (Aşama 8) eklenmiştir. Her madde uçtan uca, doğrulanabilir bir sonuçtur; nasıl doğrulanacağı açıklamada yazılıdır. "Karar" geçen maddelerde önce seçenekler araştırılır, seçim gerekçesiyle belgelenir, sonra uygulanır.
 
 Repo kısaltmaları: **Çatı** = `Auto-Follow` (ortak spec'ler `agent-os/specs/`), **Autopilot** = PX4 kodu, **Vision** = Raspberry Pi Python kodu.
 
@@ -20,7 +20,7 @@ Repo kısaltmaları: **Çatı** = `Auto-Follow` (ortak spec'ler `agent-os/specs/
 
 ## Aşama 3: Görüntü işleme geliştirme
 
-7. [ ] Hazır insan algılama modelinin seçimi — Hailo üzerinde çalışabilen önceden eğitilmiş aday modeller doğruluk, FPS ve gecikme açısından karşılaştırılır; model eğitimi yapılmaz (Vision). Doğrulama: aday modeller Pi 5 + Hailo'da aynı test görüntüleri üzerinde ölçülür, seçim ölçümlerle gerekçelendirilir. `M`
+7. [ ] Başlangıç insan algılama modelinin seçimi ve Hailo'ya aktarılması — Hazır (ör. COCO ile önceden eğitilmiş) modeller ile açık veri setleriyle yapılan deneme eğitimleri doğruluk, FPS ve gecikme açısından karşılaştırılır; seçilen modelin Hailo formatına dönüştürülme yolu (dönüşüm aracı ve sürümü) belirlenir ve belgelenir. Uçuş verisiyle eğitim Aşama 8'dedir (Vision). Doğrulama: aday modeller aynı test görüntüleri üzerinde ve Pi 5 + Hailo'da ölçülür, dönüşüm sonrası doğruluk kaybı raporlanır, seçim ölçümlerle gerekçelendirilir; model dosyaları repoya değil ortak depolama alanına konur. `L`
 8. [ ] Simülasyonda Hailo olmadan algılama — Laptop'ta Hailo cihazı olmadan Gazebo görüntüsünde algılamanın nasıl yapılacağına karar verilir (seçilen modelle tutarlılık dahil) ve uygulanır (Vision). Doğrulama: SITL'deki insan hedefi laptop'ta algılanır; Pi + Hailo sonuçlarıyla farkları belgelenir. `S`
 9. [ ] Camera Module 3 kalibrasyonu — Camera intrinsic parameters (ve gerekiyorsa distorsiyon) ölçülür ve Vision koduna yapılandırma olarak verilir (Vision). Doğrulama: kalibrasyon hatası (reprojection error) raporlanır; simülasyon kamerasının parametreleriyle ayrı tutulur. `S`
 10. [ ] Piksel koordinatından body frame hedef vektörüne dönüşüm — Pixel coordinates → görüş doğrultusu → camera frame → body frame dönüşümü uygulanır; attitude bilgisinin kullanımı değerlendirilir ve gerekçesiyle belgelenir (Vision). Doğrulama: bilinen geometrilerle birim testleri geçer ve SITL'de hesaplanan vektör Gazebo'daki gerçek (ground truth) hedef konumuyla karşılaştırılıp hata ölçülür. `L`
@@ -52,13 +52,22 @@ Repo kısaltmaları: **Çatı** = `Auto-Follow` (ortak spec'ler `agent-os/specs/
 24. [ ] Yer istasyonuna görüntü aktarımı — Görüntü aktarımı için donanım ve yöntem seçilir, gerekçesiyle belgelenir ve uygulanır (Vision). Doğrulama: bench ve uçuşta görüntü ve takip bilgisi yer istasyonunda izlenir; gecikme ve kopma durumları ölçülür. `M`
 25. [ ] Kontrollü takip uçuş testleri — Kademeli test: önce takip modu kapalıyken uçuşta algılama, sonra güvenli alanda düşük hızla takip; her uçuş öncesi test planı ve güvenlik kontrolü yapılır (Çatı). Doğrulama: uçuş logları ve Vision logları başarı kriterlerine göre analiz edilir; kullanılan commit'ler `tez-*` tag'iyle işaretlenir. `L`
 
-## Aşama 8: Değerlendirme ve raporlama
+## Aşama 8: Veri toplama ve model eğitimi
 
-26. [ ] Sonuçların değerlendirilmesi — SITL ve uçuş ölçümleri başarı kriterleriyle karşılaştırılır; simülasyon ile gerçek uçuş arasındaki farklar, sınırlamalar ve gelecek çalışmalar belirlenir (Çatı). Doğrulama: her iddianın dayandığı test ve log kaydı belirtilmiş bir değerlendirme dokümanı hazırlanır. `M`
-27. [ ] Lisans tezi raporu — Mimari, yöntemler, coordinate frame'ler, ICD, kontrol algoritması, PX4 entegrasyonu, testler, sonuçlar ve sınırlamalar mevcut dokümantasyondan derlenerek tez yazılır (Çatı). Doğrulama: planlanan / uygulanan / test edilen / doğrulanan işler raporda ayrı gösterilir ve danışman incelemesinden geçer. `XL`
+26. [ ] Uçuşlarda görüntü verisi toplama — Pi üzerinde uçuş sırasında kamera görüntüsünü, zaman damgası ve gerekli uçuş bilgileriyle (ör. irtifa, attitude) birlikte kaydeden özellik geliştirilir; kayıt formatı, çözünürlük/FPS ve depolama belirlenir. Görüntüye giren kişilerin izni alınır ve nasıl alındığı belgelenir. Kayıtlar repoya değil ortak depolama alanına konur (Vision). Doğrulama: bench'te ve en az bir uçuşta kayıt alınır; kaydın algılama/takip FPS'ini ve gecikmesini ne kadar etkilediği ölçülür. `M`
+27. [ ] Veri etiketleme ve veri seti oluşturma — Etiketleme aracı ve formatı seçilir; etiketleme kuralları (neyin "insan" sayılacağı, kısmen görünen ve çok küçük hedefler) yazılır; veri seti eğitim/doğrulama/test olarak uçuş bazında ayrılır (aynı uçuşun kareleri iki kümeye birden girmez) ve sürümlenir (Vision). Doğrulama: veri seti istatistikleri (görüntü ve kutu sayısı, irtifa/ışık koşulları) belgelenir; etiketlerden bir örneklem ikinci bir kişi tarafından kontrol edilir. `M`
+28. [ ] Model eğitimi — Başlangıç modeli (madde 7) kendi veri setimizle (gerekirse açık veri setleriyle birlikte) eğitilir; eğitim ortamı, kodun yeri, hiperparametreler ve tekrarlanabilirlik bilgileri (seed, araç sürümleri, veri seti sürümü) belgelenir (Vision). Doğrulama: aynı test kümesinde başlangıç modeliyle karşılaştırmalı doğruluk ölçümleri (ör. mAP, precision, recall) raporlanır; aşırı öğrenme (overfitting) kontrol edilir. `L`
+29. [ ] Eğitilen modelin araca alınması ve karşılaştırma — Eğitilen model Hailo formatına dönüştürülüp Pi 5'e alınır; SITL kayıtları ve kontrollü uçuş testleri yeni modelle tekrarlanır (Vision). Doğrulama: Pi 5 + Hailo'da FPS/gecikme ve dönüşüm sonrası doğruluk ölçülür; takip sonuçları başlangıç modeliyle başarı kriterlerine göre karşılaştırılır; kullanılan commit'ler `tez-*` tag'iyle işaretlenir. `M`
+
+## Aşama 9: Değerlendirme ve raporlama
+
+30. [ ] Sonuçların değerlendirilmesi — SITL ve uçuş ölçümleri başarı kriterleriyle karşılaştırılır; simülasyon ile gerçek uçuş arasındaki farklar, sınırlamalar ve gelecek çalışmalar belirlenir (Çatı). Doğrulama: her iddianın dayandığı test ve log kaydı belirtilmiş bir değerlendirme dokümanı hazırlanır. `M`
+31. [ ] Lisans tezi raporu — Mimari, yöntemler, veri seti ve model eğitimi, coordinate frame'ler, ICD, kontrol algoritması, PX4 entegrasyonu, testler, sonuçlar ve sınırlamalar mevcut dokümantasyondan derlenerek tez yazılır (Çatı). Doğrulama: planlanan / uygulanan / test edilen / doğrulanan işler raporda ayrı gösterilir ve danışman incelemesinden geçer. `XL`
 
 > Notlar
 > - Sıralama teknik bağımlılığa ve ürün tanımındaki aşamalara göredir. Bağımsız maddeler (ör. 7–9, 13) paralel yürütülebilir; ancak ICD'ye (madde 5) dayanan işler ICD onaylanmadan başlamaz.
+> - **Ortak spec'ler (madde 3, 4, 5) henüz yazılmayacak** (2026-10-25): gereksinimler netleştikçe ileride yazılacak. O zamana kadar frame tanımlarına, haberleşme yöntemine veya ICD'ye dayanan maddelere (10, 11, 12, 16, 18, 19, 23) başlanmaz. Bunlardan bağımsız yürütülebilenler: 2, 6, 7, 9, 13 (sentetik veriyle), 14, 15 ve 26 (kayıt özelliğinin geliştirilmesi).
+> - Aşama 8'in uçuş verisi, Aşama 7'deki uçuşlarda (madde 22 ve 25) toplanır; kayıt özelliği (madde 26) bu uçuşlardan önce hazır olmalıdır.
 > - Her madde uçtan uca ve doğrulanabilir bir sonuçtur (SITL'de, bench'te veya uçuşta). Bir maddenin kodlanmış olması tamamlandığı anlamına gelmez; açıklamadaki doğrulama yapılmış olmalıdır.
 > - İki repoyu birden ilgilendiren işler (mimari, coordinate frame'ler, ICD, uçtan uca SITL senaryosu) çatı repoda `agent-os/specs/` altında spec'lenir; görevler ilgili alt repolarda ayrı PR'larla uygulanır.
 > - Yeni PX4 dosyası, parametre, modül veya model adları bu planda verilmez; ilgili spec'te kararlaştırılır.
