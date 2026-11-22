@@ -52,7 +52,8 @@ SD karta yazarken Raspberry Pi Imager'da listeden seçme; **"Use custom"** ile b
 | Kamera | **Raspberry Pi Camera Module 3** |
 | Güç / GPS / telemetri | PM02 V3 güç modülü · Holybro M8N GPS · SiK Telemetry Radio V3 (915 MHz) |
 | Motor / ESC / pervane | Holybro 2216 KV920 · BLHeli S 20A ESC · 1045 pervane (4'er adet) |
-| Henüz seçilmedi | RC kumanda, batarya, yer istasyonuna görüntü aktarım donanımı |
+| RC kumanda | **FlySky FS-i6X** verici (2.4 GHz, 10 kanal) + **FlySky FS-iA10B** alıcı. Alıcının Pixhawk'a bağlantısı ve failsafe ayarı yol haritası madde 22'de yapılacak. |
+| Henüz seçilmedi | Batarya, yer istasyonuna görüntü aktarım donanımı |
 | Pixhawk firmware | Autopilot reposundan derlenir: `make px4_fmu-v6c_default` (hazır PX4 firmware'i **yükleme**) |
 | Airframe | `SYS_AUTOSTART = 4019` (Holybro X500 V2) |
 
