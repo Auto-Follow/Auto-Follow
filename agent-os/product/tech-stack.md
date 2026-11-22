@@ -24,7 +24,7 @@ Son güncelleme: 2026-10-24
 | GPS | Holybro M8N | Kesin |
 | Telemetri radyosu | SiK Telemetry Radio V3, 915 MHz | Kesin |
 | Yardımcı bilgisayar | Raspberry Pi 5 | Kesin |
-| AI hızlandırıcı | Hailo AI Kit | Kesin (donanım) |
+| AI hızlandırıcı | Hailo-8 yapay zekâ hızlandırıcı, 26 TOPS (Pi 5 üzerinde) | Kesin (donanım) |
 | Kamera | Raspberry Pi Camera Module 3 | Kesin (donanım) |
 | RC kumanda sistemi | FlySky FS-i6X verici (2.4 GHz, 10 kanal) + FlySky FS-iA10B alıcı | Kesin (donanım) |
 | Batarya | Leopard Power 4S LiPo, 14,8 V, 6200 mAh, 40C | Kesin (donanım) |
@@ -74,7 +74,7 @@ Son güncelleme: 2026-10-24
 
 | Bileşen | Seçim | Durum |
 |---|---|---|
-| Çıkarım donanımı | Hailo AI Kit (Pi 5 üzerinde) | Kesin (donanım) |
+| Çıkarım donanımı | Hailo-8, 26 TOPS (Pi 5 üzerinde) | Kesin (donanım) |
 | Hailo yazılım yığını (runtime, sürücü, Python paketleri) ve sürümleri | Pi OS Trixie / Python 3.13 uyumu doğrulanmadı, sürümler sabitlenmedi | Karar bekliyor / doğrulanacak |
 | İnsan algılama modeli | Önce hazır/deneme modeli (madde 7), sonra uçuş verisiyle ekibin eğittiği model (madde 28); hangisi olduğu seçilmedi | Karar bekliyor |
 | Model eğitimi | **Kapsamda:** uçuşlarda toplanan görüntülerden etiketlenen kendi veri setimizle eğitim (Aşama 8) | Kesin |

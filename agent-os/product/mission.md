@@ -8,7 +8,7 @@ Son güncelleme: 2026-10-25
 
 **Auto-Follow**, hareket eden bir insanı kamera görüntüsü üzerinden algılayıp belirli bir mesafeden otonom olarak takip eden bir İHA sistemidir. Bir insan algılama modelinin çıktısını geometrik hesaplamalarla İHA'nın body coordinate frame'ine aktaran ve bu bilgiyi PX4 Autopilot'a entegre edilmiş özel bir takip modunda kullanan bir lisans tezi prototipidir.
 
-Sistem; Holybro X500 V2 gövde, Pixhawk 6C (PX4 v1.17.0), Raspberry Pi 5, Hailo AI Kit ve Raspberry Pi Camera Module 3 üzerine kurulur. Önce simülasyonda (Gazebo Harmonic, SITL), ardından kontrollü donanım testlerinde doğrulanır ve bütün süreç akademik olarak raporlanır.
+Sistem; Holybro X500 V2 gövde, Pixhawk 6C (PX4 v1.17.0), Raspberry Pi 5, Hailo-8 yapay zekâ hızlandırıcı (26 TOPS) ve Raspberry Pi Camera Module 3 üzerine kurulur. Önce simülasyonda (Gazebo Harmonic, SITL), ardından kontrollü donanım testlerinde doğrulanır ve bütün süreç akademik olarak raporlanır.
 
 ### Proje ve repo adı hakkında
 Ürün bir "Follow Me İHA" olarak tanımlanır; ancak proje ve repo adı bilinçli olarak daha genel seçilmiştir: **Auto-Follow**. Gerekçe: proje yalnızca takip modundan ibaret değildir; uçuşlarda veri toplanması ve insan algılama modelinin eğitilmesi de projenin parçasıdır ve çalışma ileride bu yönde, bu tezin kapsamının ötesine taşınabilir.
@@ -58,7 +58,7 @@ Bir özelliğin kodlanmış olması, çalıştığının kanıtı değildir. Öl
 > Bu bölüm bir tez prototipinin tasarım tercihlerini anlatır; rakip ürünlerle sayısal bir karşılaştırma iddiası içermez.
 
 ### Uçuş üzerinde (on-board) çıkarım
-İnsan algılama, İHA üzerindeki Raspberry Pi 5 ve Hailo AI Kit ile yapılması hedeflenir; algılama için yer istasyonuna görüntü göndermek gerekmez. Hailo yazılım yığınının Pi OS Trixie üzerinde çalıştığı henüz doğrulanmamıştır; bu, yol haritasının erken bir adımıdır.
+İnsan algılama, İHA üzerindeki Raspberry Pi 5 ve Hailo-8 (26 TOPS) ile yapılması hedeflenir; algılama için yer istasyonuna görüntü göndermek gerekmez. Hailo yazılım yığınının Pi OS Trixie üzerinde çalıştığı henüz doğrulanmamıştır; bu, yol haritasının erken bir adımıdır.
 
 ### PX4'e entegre özel takip modu
 PX4 sıfırdan yazılmaz; sabit sürüm (v1.17.0) üzerine projeye özgü bir takip modu eklenir. Böylece takip davranışı, PX4'ün mevcut kontrol zinciri ve failsafe mekanizmalarıyla birlikte çalışır. Entegrasyonun nasıl yapılacağı henüz seçilmemiştir.

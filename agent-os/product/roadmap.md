@@ -9,7 +9,7 @@ Repo kısaltmaları: **Çatı** = `Auto-Follow` (ortak spec'ler `agent-os/specs/
 ## Aşama 1: Gereksinimler ve planlama
 
 1. [ ] Ölçülebilir başarı kriterlerinin belirlenmesi — Takip mesafesi ve toleransı, hedefin görüntüde tutulma oranı, uçtan uca gecikme, hedef kaybında beklenen davranış ve test koşulları sayısal olarak tanımlanır (Çatı). Doğrulama: her kriterin hangi testle ve hangi log verisiyle ölçüleceği yazılmış ve repo sorumlusu tarafından onaylanmış olur. `S`
-2. [ ] Hailo yazılım yığınının Pi OS Trixie üzerinde kurulumu, sürüm sabitleme ve doğrulama — Hailo AI Kit için gerekli yazılımın Raspberry Pi OS (Debian 13 Trixie, Python 3.13) ile uyumu araştırılır, kurulur ve Camera Module 3 görüntüsüyle örnek bir hazır model çalıştırılır (Vision). Doğrulama: bench'te Pi 5 üzerinde çıkarım çalışır, ölçülen FPS/gecikme kaydedilir ve sürümler `VERSIONS.md` / `Vision/requirements/` içine yazılır; uyumsuzluk varsa gerekçesiyle raporlanır. `M`
+2. [ ] Hailo yazılım yığınının Pi OS Trixie üzerinde kurulumu, sürüm sabitleme ve doğrulama — Hailo-8 (26 TOPS) için gerekli yazılımın Raspberry Pi OS (Debian 13 Trixie, Python 3.13) ile uyumu araştırılır, kurulur ve Camera Module 3 görüntüsüyle örnek bir hazır model çalıştırılır (Vision). Doğrulama: bench'te Pi 5 üzerinde çıkarım çalışır, ölçülen FPS/gecikme kaydedilir ve sürümler `VERSIONS.md` / `Vision/requirements/` içine yazılır; uyumsuzluk varsa gerekçesiyle raporlanır. `M`
 
 ## Aşama 2: Sistem mimarisi
 
