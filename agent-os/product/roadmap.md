@@ -46,7 +46,7 @@ Repo kısaltmaları: **Çatı** = `Auto-Follow` (ortak spec'ler `agent-os/specs/
 
 ## Aşama 7: Donanım entegrasyonu
 
-21. [ ] Eksik donanım kararları ve gerçek kütle — RC kumanda sistemi ve batarya seçilir, seçim gerekçeleri belgelenir; Pi 5, Hailo ve kamera dahil aracın gerçek kütlesi ölçülür ve simülasyon modeline yansıtılır (Çatı). Doğrulama: seçimler ve ölçülen kütle belgelenir; güncellenmiş modelle uçtan uca SITL senaryosu yeniden geçer. `S`
+21. [ ] Eksik donanım kararları ve gerçek kütle — RC kumanda sistemi, batarya ve Pi 5'in araçtaki güç beslemesi seçilir, seçim gerekçeleri belgelenir; Pi 5, Hailo ve kamera dahil aracın gerçek kütlesi ölçülür ve simülasyon modeline yansıtılır (Çatı). Doğrulama: seçimler ve ölçülen kütle belgelenir; güncellenmiş modelle uçtan uca SITL senaryosu yeniden geçer. `S`
 22. [ ] Donanım montajı ve temel uçuş — X500 V2 montajı, sensör kalibrasyonları ve RC failsafe ayarı yapılır; Pi 5, Hailo ve Camera Module 3 araca yerleştirilir (Autopilot). Doğrulama: takip modu kullanılmadan, güvenli alanda manuel/konum tutma uçuşu yapılır ve ULog kaydı incelenir. `M`
 23. [ ] Pi ↔ Pixhawk bench entegrasyonu — Gerçek Pixhawk 6C ile Pi 5 arasında seçilen haberleşme yöntemi kurulur; Hailo ile on-board algılama ve hedef vektörü gönderimi pervanesiz çalıştırılır (Vision). Doğrulama: pervaneler takılı değilken mesajlar PX4'te alınır, uçtan uca gecikme ve frekans ölçülür, veri kesintisinde mod davranışı gözlenir. `M`
 24. [ ] Yer istasyonuna görüntü aktarımı — Görüntü aktarımı için donanım ve yöntem seçilir, gerekçesiyle belgelenir ve uygulanır (Vision). Doğrulama: bench ve uçuşta görüntü ve takip bilgisi yer istasyonunda izlenir; gecikme ve kopma durumları ölçülür. `M`
