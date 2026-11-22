@@ -24,7 +24,7 @@ Son güncelleme: 2026-10-24
 | GPS | Holybro M8N | Kesin |
 | Telemetri radyosu | SiK Telemetry Radio V3, 915 MHz | Kesin |
 | Yardımcı bilgisayar | Raspberry Pi 5 | Kesin |
-| AI hızlandırıcı | Hailo-8 yapay zekâ hızlandırıcı, 26 TOPS (Pi 5 üzerinde) | Kesin (donanım) |
+| AI hızlandırıcı | Hailo-8 yapay zekâ hızlandırıcı, 26 TOPS (Pi 5 üzerinde). Model Hailo-8, 13 TOPS olan Hailo-8L değil | Kesin (donanım) |
 | Kamera | Raspberry Pi Camera Module 3 | Kesin (donanım) |
 | RC kumanda sistemi | FlySky FS-i6X verici (2.4 GHz, 10 kanal) + FlySky FS-iA10B alıcı | Kesin (donanım) |
 | Batarya | Leopard Power 4S LiPo, 14,8 V, 6200 mAh, 40C | Kesin (donanım) |

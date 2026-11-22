@@ -48,7 +48,7 @@ SD karta yazarken Raspberry Pi Imager'da listeden seçme; **"Use custom"** ile b
 | Gövde | Holybro **X500 V2** |
 | Uçuş kontrolcüsü | Holybro **Pixhawk 6C** |
 | Yardımcı bilgisayar | **Raspberry Pi 5** (Pixhawk'a bağlantı yöntemi henüz kesin değil; şu anki öngörü TELEM2 seri port — yol haritası madde 4'te kesinleşecek) |
-| Yapay zekâ hızlandırıcı | **Hailo-8**, 26 TOPS (Pi 5 üzerinde). Yazılımı ve sürümü **henüz sabitlenmedi**; Pi OS Trixie uyumu yol haritası madde 2'de doğrulanacak. O zamana kadar Hailo için kendi başına paket kurma. |
+| Yapay zekâ hızlandırıcı | **Hailo-8**, 26 TOPS (Pi 5 üzerinde; 13 TOPS olan Hailo-8L değil). Yazılımı ve sürümü **henüz sabitlenmedi**; Pi OS Trixie uyumu yol haritası madde 2'de doğrulanacak. O zamana kadar Hailo için kendi başına paket kurma. |
 | Kamera | **Raspberry Pi Camera Module 3** |
 | Güç / GPS / telemetri | PM02 V3 güç modülü · Holybro M8N GPS · SiK Telemetry Radio V3 (915 MHz) |
 | Motor / ESC / pervane | Holybro 2216 KV920 · BLHeli S 20A ESC · 1045 pervane (4'er adet) |

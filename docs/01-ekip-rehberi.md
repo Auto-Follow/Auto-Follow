@@ -532,7 +532,7 @@ Tüm görevler: [issue listesi](https://github.com/Auto-Follow/Auto-Follow/issue
 ### 2026-11-22: RC kumanda ve batarya belli oldu
 - RC kumanda sistemi: **FlySky FS-i6X** verici (2.4 GHz, 10 kanal) + **FlySky FS-iA10B** alıcı (yol haritası madde 21'in bir parçası).
 - Batarya: **Leopard Power 4S LiPo**, 14,8 V, 6200 mAh, 40C (yine madde 21).
-- Yapay zekâ hızlandırıcı netleşti: **Hailo-8, 26 TOPS** (önceden yalnızca "Hailo AI Kit" yazıyordu). Hailo yazılımı ve sürümleri yine madde 2'de belirlenecek.
+- Yapay zekâ hızlandırıcı netleşti: **Hailo-8, 26 TOPS** (önceden yalnızca "Hailo AI Kit" yazıyordu). Dikkat: model **Hailo-8**, 13 TOPS olan **Hailo-8L değil**; yazılım ve model dönüşümü (madde 2 ve 7) buna göre seçilir. Hailo yazılımı ve sürümleri yine madde 2'de belirlenecek.
 - Hâlâ açık olan donanım konuları: Raspberry Pi 5'in araçtaki güç beslemesi (bataryadan 5 V; listeye yeni eklendi), yer istasyonuna görüntü aktarım donanımı, aracın gerçek kütlesi.
 - Alıcının Pixhawk'a bağlanması ve RC failsafe ayarı madde 22'de (donanım montajı) yapılacak.
 - Güncel donanım listesi: [02-ortak-yazilim-surumleri.md](02-ortak-yazilim-surumleri.md) ve `agent-os/product/tech-stack.md`.
