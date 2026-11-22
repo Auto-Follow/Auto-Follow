@@ -529,9 +529,10 @@ Tüm görevler: [issue listesi](https://github.com/Auto-Follow/Auto-Follow/issue
 - [ ] Pixhawk 6C'de yer açmak (kullanılmayan PX4 modüllerini kapatan özel kart ayarı); ilk PX4 modülünden önce
 - [ ] Bu rehberin ekip ile birlikte gözden geçirilmesi
 
-### 2026-11-22: RC kumanda belli oldu
+### 2026-11-22: RC kumanda ve batarya belli oldu
 - RC kumanda sistemi: **FlySky FS-i6X** verici (2.4 GHz, 10 kanal) + **FlySky FS-iA10B** alıcı (yol haritası madde 21'in bir parçası).
-- Hâlâ açık olan donanım konuları: batarya, yer istasyonuna görüntü aktarım donanımı, aracın gerçek kütlesi.
+- Batarya: **Leopard Power 4S LiPo**, 14,8 V, 6200 mAh, 40C (yine madde 21).
+- Hâlâ açık olan donanım konuları: yer istasyonuna görüntü aktarım donanımı, aracın gerçek kütlesi.
 - Alıcının Pixhawk'a bağlanması ve RC failsafe ayarı madde 22'de (donanım montajı) yapılacak.
 - Güncel donanım listesi: [02-ortak-yazilim-surumleri.md](02-ortak-yazilim-surumleri.md) ve `agent-os/product/tech-stack.md`.
 

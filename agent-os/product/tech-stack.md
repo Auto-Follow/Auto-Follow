@@ -27,7 +27,7 @@ Son güncelleme: 2026-10-24
 | AI hızlandırıcı | Hailo AI Kit | Kesin (donanım) |
 | Kamera | Raspberry Pi Camera Module 3 | Kesin (donanım) |
 | RC kumanda sistemi | FlySky FS-i6X verici (2.4 GHz, 10 kanal) + FlySky FS-iA10B alıcı | Kesin (donanım) |
-| Batarya | — | Karar bekliyor |
+| Batarya | Leopard Power 4S LiPo, 14,8 V, 6200 mAh, 40C | Kesin (donanım) |
 | Görüntü aktarım donanımı (yer istasyonuna) | — | Karar bekliyor |
 | Aracın gerçek kütlesi | Ölçülmedi; simülasyonda şimdilik standart X500 | Karar bekliyor (ölçülecek) |
 
