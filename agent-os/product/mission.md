@@ -101,7 +101,7 @@ Her bileşen önce Gazebo Harmonic + PX4 SITL ortamında doğrulanır; donanıma
 - **Planlanan, uygulanan, test edilen ve doğrulanan** işler birbirinden açıkça ayrılır. Kodlanmış olmak, çalıştığının kanıtı değildir.
 - Test edilmemiş veya doğrulanmamış sonuçlar başarılı olarak sunulmaz; performans iddiaları yalnızca ölçülen verilerin desteklediği kadar yapılır.
 - Teknik kararlar gerekçeleriyle belgelenir; kod değişikliğiyle birlikte ilgili dokümantasyon da güncellenir.
-- Henüz belirlenmemiş donanım ve yöntemler (algılama modeli, eğitim çerçevesi ve ortamı, etiketleme aracı, haberleşme yöntemi, kontrol algoritması, PX4 entegrasyon yaklaşımı, RC, batarya, görüntü aktarımı vb.) kesinleşmiş gibi sunulmaz.
+- Henüz belirlenmemiş donanım ve yöntemler (algılama modeli, eğitim çerçevesi ve ortamı, etiketleme aracı, haberleşme yöntemi, kontrol algoritması, PX4 entegrasyon yaklaşımı, görüntü aktarımı vb.) kesinleşmiş gibi sunulmaz.
 - Görüntü işleme (`Vision` reposu) ile kontrol (`Autopilot` reposu) arasındaki sorumluluk sınırı korunur; ortak arayüz çatı repoda (`agent-os/specs/`) tanımlanır ve iki taraf ona uyar.
 - İş, `main` üzerinde değil bir özellik branch'inde küçük ve sık adımlarla commit edilir (ör. her spec aşamasından ve her tamamlanan görev grubundan sonra); böylece yanlış yöne gidildiğinde daha önceki çalışan bir duruma dönülebilir.
 - Commit mesajları açıklayıcıdır ve ilgili spec'e/görev grubuna atıf yapar.

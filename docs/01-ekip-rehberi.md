@@ -529,6 +529,13 @@ Tüm görevler: [issue listesi](https://github.com/Auto-Follow/Auto-Follow/issue
 - [ ] Pixhawk 6C'de yer açmak (kullanılmayan PX4 modüllerini kapatan özel kart ayarı); ilk PX4 modülünden önce
 - [ ] Bu rehberin ekip ile birlikte gözden geçirilmesi
 
+### 2026-11-22: RC kumanda ve batarya belli oldu
+- RC kumanda sistemi: **FlySky FS-i6X** verici (2.4 GHz, 10 kanal) + **FlySky FS-iA10B** alıcı (yol haritası madde 21'in bir parçası).
+- Batarya: **Leopard Power 4S LiPo**, 14,8 V, 6200 mAh, 40C (yine madde 21).
+- Hâlâ açık olan donanım konuları: yer istasyonuna görüntü aktarım donanımı, aracın gerçek kütlesi.
+- Alıcının Pixhawk'a bağlanması ve RC failsafe ayarı madde 22'de (donanım montajı) yapılacak.
+- Güncel donanım listesi: [02-ortak-yazilim-surumleri.md](02-ortak-yazilim-surumleri.md) ve `agent-os/product/tech-stack.md`.
+
 ### 2026-10-25: Model eğitimi kapsama alındı, ortak spec'ler ertelendi
 - İnsan algılama modelinin eğitimi artık projenin parçası: uçuşlarda görüntü toplanacak, etiketlenip veri seti oluşturulacak ve model bu veri setiyle eğitilecek. Yol haritasına bunun için **Aşama 8 (madde 26–29)** eklendi; değerlendirme ve tez raporu 30 ve 31 numara oldu. Yol haritası artık 31 madde.
 - Veri seti ve model dosyaları yine **repoya konmaz** (altın kural 11); ortak bir depolama alanında tutulur (hangisi olduğu henüz seçilmedi).
